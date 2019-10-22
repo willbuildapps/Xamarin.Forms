@@ -51,10 +51,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				Controller.UpdateEmptyView();
 			}
-			else if (changedProperty.Is(Xamarin.Forms.ItemsView.ItemSizingStrategyProperty))
-			{
-				UpdateItemSizingStrategy();
-			}
 			else if (changedProperty.Is(Xamarin.Forms.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
 				UpdateHorizontalScrollBarVisibility();
@@ -110,11 +106,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				Controller.UpdateLayout(_layout);
 			}
-		}
-
-		protected virtual void UpdateItemSizingStrategy()
-		{
-			UpdateLayout();
 		}
 
 		protected virtual void UpdateItemsUpdatingScrollMode()

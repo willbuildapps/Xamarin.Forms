@@ -27,6 +27,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateLayout();
 			}
+			else if (changedProperty.Is(StructuredItemsView.ItemSizingStrategyProperty))
+			{
+				UpdateItemSizingStrategy();
+			}
 		}
 
 		protected override void SetUpNewElement(TItemsView newElement)
@@ -59,6 +63,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Fall back to vertical list
 			return new ListViewLayout(new LinearItemsLayout(ItemsLayoutOrientation.Vertical), itemSizingStrategy);
+		}
+
+		protected virtual void UpdateItemSizingStrategy()
+		{
+			UpdateLayout();
 		}
 
 		protected virtual void UpdateHeaderView()

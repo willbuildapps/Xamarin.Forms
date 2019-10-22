@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly CarouselView _carouselView;
 		readonly ItemsLayout _itemsLayout;
 
-		public CarouselViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
+		public CarouselViewLayout(ItemsLayout itemsLayout, CarouselView carouselView) : base(itemsLayout, ItemSizingStrategy.None)
 		{
 			_carouselView = carouselView;
 			_itemsLayout = itemsLayout;
