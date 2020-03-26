@@ -24,6 +24,15 @@
              <CollectionView.ItemTemplate>
                  <DataTemplate>
                      <SwipeView>
+                         <SwipeView.LeftItems>
+                            <SwipeItems
+                                Mode="Execute">
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"
+                                    Invoked="OnDeleteSwipeItemInvoked"/>
+                            </SwipeItems>
+                         </SwipeView.LeftItems>
                          <SwipeView.RightItems>
                              <SwipeItem
                                  Text="Delete"

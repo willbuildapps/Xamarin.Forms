@@ -9,6 +9,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			InitializeComponent();
             BindingContext = new SwipeItemsDisposeViewModel();
         }
+
+		void OnDeleteSwipeItemInvoked(System.Object sender, System.EventArgs e)
+        {
+            DisplayAlert("SwipeView", "Delete Invoked", "OK");
+        }
 	}
 
     public class SwipeItemsDisposeModel
