@@ -12,8 +12,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			InitializeComponent();
 			BindingContext = new SwipeViewGalleryViewModel();
 
-			MessagingCenter.Subscribe<SwipeViewGalleryViewModel>(this, "favourite", sender => { DisplayAlert("SwipeView", "Favourite", "Ok"); });
-			MessagingCenter.Subscribe<SwipeViewGalleryViewModel>(this, "delete", sender => { DisplayAlert("SwipeView", "Delete", "Ok"); });
+			MessagingCenter.Subscribe<SwipeViewGalleryViewModel, object>(this, "favourite", (sender, args) =>
+			{
+				DisplayAlert("SwipeView", $"Favourite {((Message)args).Title}", "Ok");
+			});
+
+			MessagingCenter.Subscribe<SwipeViewGalleryViewModel, object>(this, "delete", (sender, args) =>
+			{
+				DisplayAlert("SwipeView", $"Delete {((Message)args).Title}", "Ok");
+			});
 		}
 	}
 
@@ -24,12 +31,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 		public string SubTitle { get; set; }
 		public string Description { get; set; }
 		public string Date { get; set; }
+
+		public override string ToString()
+		{
+			return Title;
+		}
 	}
 
 	[Preserve(AllMembers = true)]
 	public class SwipeViewGalleryViewModel : BindableObject
 	{
-		private ObservableCollection<Message> _messages;
+		ObservableCollection<Message> _messages;
 
 		public SwipeViewGalleryViewModel()
 		{
@@ -47,11 +59,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			}
 		}
 
-		public ICommand FavouriteCommand => new Command(OnFavourite);
-		public ICommand DeleteCommand => new Command(OnDelete);
+		public ICommand FavouriteCommand => new Command<object>(OnFavourite);
+		public ICommand DeleteCommand => new Command<object>(OnDelete);
 
-
-		private void LoadMessages()
+		void LoadMessages()
 		{
 			for (int i = 0; i < 100; i++)
 			{
@@ -59,14 +70,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			}
 		}
 
-		private void OnFavourite()
+		void OnFavourite(object parameter)
 		{
-			MessagingCenter.Send(this, "favourite");
+			MessagingCenter.Send(this, "favourite", parameter);
 		}
 
-		private void OnDelete()
+		void OnDelete(object parameter)
 		{
-			MessagingCenter.Send(this, "delete");
+			MessagingCenter.Send(this, "delete", parameter);
 		}
 	}
 }

@@ -516,8 +516,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void BindSwipeItem(ISwipeItem swipeItem)
+		{
+			if (Element == null)
+				return;
+
+			var bc = Element.BindingContext;
+			BindableObject.SetInheritedBindingContext((Element)swipeItem, bc);
+		}
+
 		UIButton CreateSwipeItem(SwipeItem formsSwipeItem)
 		{
+			BindSwipeItem(formsSwipeItem);
+
 			var swipeItem = new UIButton(UIButtonType.Custom)
 			{
 				BackgroundColor = formsSwipeItem.BackgroundColor.ToUIColor()
@@ -541,6 +552,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIView CreateSwipeItemView(SwipeItemView formsSwipeItemView)
 		{
+			BindSwipeItem(formsSwipeItemView);
+
 			var renderer = Platform.CreateRenderer(formsSwipeItemView);
 			Platform.SetRenderer(formsSwipeItemView, renderer);
 			UpdateSwipeItemViewLayout(formsSwipeItemView);

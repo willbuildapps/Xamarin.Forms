@@ -39,7 +39,8 @@
                         <SwipeItems
                             Mode="Reveal">
                             <SwipeItemView
-                                Command="{Binding Source={x:Reference CustomSwipeItemCollectionView}, Path=BindingContext.FavouriteCommand}">
+                                Command="{Binding Source={x:Reference CustomSwipeItemCollectionView}, Path=BindingContext.FavouriteCommand}"
+                                CommandParameter="{Binding}">
                                 <Grid
                                     WidthRequest="100">
                                     <BoxView

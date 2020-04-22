@@ -22,7 +22,6 @@ namespace Xamarin.Forms
 		public SwipeItems(IEnumerable<ISwipeItem> swipeItems)
 		{
 			_swipeItems = new ObservableCollection<ISwipeItem>(swipeItems) ?? throw new ArgumentNullException(nameof(swipeItems));
-			_swipeItems.CollectionChanged += OnSwipeItemsChanged;
 		}
 
 		public SwipeItems() : this(Enumerable.Empty<ISwipeItem>())
@@ -104,27 +103,6 @@ namespace Xamarin.Forms
 		public void RemoveAt(int index)
 		{
 			_swipeItems.RemoveAt(index);
-		}
-
-		protected override void OnBindingContextChanged()
-		{
-			base.OnBindingContextChanged();
-
-			object bc = BindingContext;
-
-			foreach (BindableObject item in _swipeItems)
-				SetInheritedBindingContext(item, bc);
-		}
-
-		void OnSwipeItemsChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-		{
-			if (notifyCollectionChangedEventArgs.NewItems == null)
-				return;
-
-			object bc = BindingContext;
-
-			foreach (BindableObject item in notifyCollectionChangedEventArgs.NewItems)
-				SetInheritedBindingContext(item, bc);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

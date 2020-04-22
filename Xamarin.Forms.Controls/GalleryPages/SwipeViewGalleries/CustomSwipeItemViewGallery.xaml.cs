@@ -10,8 +10,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			InitializeComponent();
 			BindingContext = new SwipeViewGalleryViewModel();
 
-			MessagingCenter.Subscribe<SwipeViewGalleryViewModel>(this, "favourite", sender => { DisplayAlert("SwipeView", "Favourite", "Ok"); });
-			MessagingCenter.Subscribe<SwipeViewGalleryViewModel>(this, "delete", sender => { DisplayAlert("SwipeView", "Delete", "Ok"); });
+			MessagingCenter.Subscribe<SwipeViewGalleryViewModel, object>(this, "favourite", (sender, args) =>
+			{
+				DisplayAlert("SwipeView", $"Favourite {((Message)args).Title}", "Ok");
+			});
+
+			MessagingCenter.Subscribe<SwipeViewGalleryViewModel, object>(this, "delete", (sender, args) =>
+			{
+				DisplayAlert("SwipeView", $"Delete {((Message)args).Title}", "Ok");
+			});
 		}
 	}
 }

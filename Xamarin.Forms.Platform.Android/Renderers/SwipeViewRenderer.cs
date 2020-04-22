@@ -688,8 +688,19 @@ namespace Xamarin.Forms.Platform.Android
 			return swipeItems;
 		}
 
+		void BindSwipeItem(ISwipeItem swipeItem)
+		{
+			if (Element == null)
+				return;
+
+			var bc = Element.BindingContext;
+			BindableObject.SetInheritedBindingContext((Element)swipeItem, bc);
+		}
+
 		AView CreateSwipeItem(SwipeItem formsSwipeItem)
 		{
+			BindSwipeItem(formsSwipeItem);
+
 			var swipeButton = new AButton(_context)
 			{
 				Background = new ColorDrawable(formsSwipeItem.BackgroundColor.ToAndroid()),
@@ -738,12 +749,14 @@ namespace Xamarin.Forms.Platform.Android
 			return swipeButton;
 		}
 
-		AView CreateSwipeItemView(SwipeItemView swipeItemView)
+		AView CreateSwipeItemView(SwipeItemView formsSwipeItemView)
 		{
-			var renderer = Platform.CreateRenderer(swipeItemView, _context);
-			Platform.SetRenderer(swipeItemView, renderer);
+			BindSwipeItem(formsSwipeItemView);
+
+			var renderer = Platform.CreateRenderer(formsSwipeItemView, _context);
+			Platform.SetRenderer(formsSwipeItemView, renderer);
 			var swipeItem = renderer?.View;
-			swipeItem.Visibility = swipeItemView.IsVisible ? ViewStates.Visible : ViewStates.Gone;
+			swipeItem.Visibility = formsSwipeItemView.IsVisible ? ViewStates.Visible : ViewStates.Gone;
 
 			return swipeItem;
 		}
