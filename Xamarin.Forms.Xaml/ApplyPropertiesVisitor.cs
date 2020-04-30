@@ -327,6 +327,9 @@ namespace Xamarin.Forms.Xaml
 			Exception xpe = null;
 			var xKey = node is IElementNode && ((IElementNode)node).Properties.ContainsKey(XmlName.xKey) ? ((ValueNode)((IElementNode)node).Properties[XmlName.xKey]).Value as string : null;
 
+			var assemblyName = (context.RootAssembly ?? rootElement.GetType().GetTypeInfo().Assembly)?.GetName().Name;
+			void registerSourceInfo(object target, string path) => VisualDiagnostics.RegisterSourceInfo(target, new Uri($"{path};assembly={assemblyName}", UriKind.Relative), ((IXmlLineInfo)node).LineNumber, ((IXmlLineInfo)node).LinePosition);
+
 			//If it's an attached BP, update elementType and propertyName
 			var bpOwnerType = xamlelement.GetType();
 			var attached = GetRealNameAndType(ref bpOwnerType, propertyName.NamespaceURI, ref localName, context, lineInfo);
@@ -341,20 +344,32 @@ namespace Xamarin.Forms.Xaml
 				return;
 
 			//If value is BindingBase, SetBinding
-			if (xpe == null && TrySetBinding(xamlelement, property, localName, value, lineInfo, out xpe))
+			if (xpe == null && TrySetBinding(xamlelement, property, localName, value, lineInfo, out var binding, out xpe)) {
+				if (binding != null && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					registerSourceInfo(binding, path);
 				return;
+			}
 
 			//If it's a BindableProberty, SetValue
-			if (xpe == null && TrySetValue(xamlelement, property, attached, value, lineInfo, serviceProvider, out xpe))
+			if (xpe == null && TrySetValue(xamlelement, property, attached, value, lineInfo, serviceProvider, out xpe)) {
+				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					registerSourceInfo(value,path);
 				return;
+			}
 
 			//If we can assign that value to a normal property, let's do it
-			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, context, out xpe))
+			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, context, out xpe)) {
+				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					registerSourceInfo(value, path);
 				return;
+			}
 
 			//If it's an already initialized property, add to it
-			if (xpe == null && TryAddToProperty(xamlelement, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe))
+			if (xpe == null && TryAddToProperty(xamlelement, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe)) {
+				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					registerSourceInfo(value, path);
 				return;
+			}
 
 			xpe = xpe ?? new XamlParseException($"Cannot assign property \"{localName}\": Property does not exist, or is not assignable, or mismatching type between value and property", lineInfo);
 			if (context.ExceptionHandler != null)
@@ -436,21 +451,21 @@ namespace Xamarin.Forms.Xaml
 			return true;
 		}
 
-		static bool TrySetBinding(object element, BindableProperty property, string localName, object value, IXmlLineInfo lineInfo, out Exception exception)
+		static bool TrySetBinding(object element, BindableProperty property, string localName, object value, IXmlLineInfo lineInfo, out BindingBase binding, out Exception exception)
 		{
 			exception = null;
 
 			var elementType = element.GetType();
-			var binding = value.ConvertTo(typeof(BindingBase),pinfoRetriever:null,serviceProvider:null, exception:out exception) as BindingBase;
+			binding = value.ConvertTo(typeof(BindingBase),pinfoRetriever:null,serviceProvider:null, exception:out exception) as BindingBase;
 			if (exception != null)
 				return false;
-			var bindable = element as BindableObject;
+
 			var nativeBindingService = DependencyService.Get<INativeBindingService>();
 
 			if (binding == null)
 				return false;
 
-			if (bindable != null && property != null) {
+			if (element is BindableObject bindable && property != null) {
 				bindable.SetBinding(property, binding);
 				return true;
 			}
