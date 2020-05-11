@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 		const double SwipeMinimumDelta = 10;
 
 		readonly Dictionary<ISwipeItem, object> _swipeItems;
+		SwipeItems _leftItems, _rightItems, _topItems, _bottomItems;
 		UITapGestureRecognizer _tapGestureRecognizer;
 		UIPanGestureRecognizer _panGestureRecognizer;
 		View _scrollParent;
@@ -83,9 +84,11 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				UpdateContent();
+				UpdateSwipeItems();
 				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
 				SetBackgroundColor(Element.BackgroundColor);
+				UpdateFlowDirection();
 			}
 
 			if (e.OldElement != null)
@@ -151,6 +154,10 @@ namespace Xamarin.Forms.Platform.iOS
 				SetBackgroundColor(Element.BackgroundColor);
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
+			else if (e.IsOneOf(SwipeView.LeftItemsProperty, SwipeView.TopItemsProperty, SwipeView.RightItemsProperty, SwipeView.BottomItemsProperty))
+				UpdateSwipeItems();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
 				UpdateSwipeTransitionMode();
 		}
@@ -319,6 +326,41 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void UpdateSwipeItems()
+		{
+			_leftItems = Element.LeftItems;
+			_rightItems = Element.RightItems;
+			_topItems = Element.TopItems;
+			_bottomItems = Element.BottomItems;
+		}
+
+		void UpdateFlowDirection()
+		{
+			if (Element is IVisualElementController controller)
+			{
+				var isRtlLayoutDirection = controller.EffectiveFlowDirection.IsRightToLeft();
+
+				if (isRtlLayoutDirection)
+				{
+					// Swap the SwipeItems from Right to Left.
+					var leftItems = _leftItems;
+					var righItems = _rightItems;
+
+					_leftItems = righItems;
+					_rightItems = leftItems;
+				}
+				else
+					UpdateSwipeItems();
+
+				if (_isOpen)
+				{
+					DisposeSwipeItems();
+					UpdateNativeSwipeItems();
+					SwipeToThreshold(false);
+				}
+			}
+		}
+
 		void HandleTap()
 		{
 			if (_tapGestureRecognizer == null)
@@ -396,7 +438,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool HasSwipeItems()
 		{
-			return Element != null && (IsValidSwipeItems(Element.LeftItems) || IsValidSwipeItems(Element.RightItems) || IsValidSwipeItems(Element.TopItems) || IsValidSwipeItems(Element.BottomItems));
+			return Element != null && (IsValidSwipeItems(_leftItems) || IsValidSwipeItems(_rightItems) || IsValidSwipeItems(_topItems) || IsValidSwipeItems(_bottomItems));
 		}
 
   		bool IsHorizontalSwipe()
@@ -409,7 +451,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return swipeItems != null && swipeItems.Where(s => s.IsVisible).Count() > 0;
 		}
 
-		void UpdateSwipeItems()
+		void UpdateNativeSwipeItems()
 		{
 			if (_contentView == null || _actionView != null)
 				return;
@@ -728,7 +770,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
 
-				UpdateSwipeItems();
+				UpdateNativeSwipeItems();
 			}
 			
 			if (!_isSwiping)
@@ -807,16 +849,16 @@ namespace Xamarin.Forms.Platform.iOS
 			switch (_swipeDirection)
 			{
 				case SwipeDirection.Left:
-					swipeItems = Element.RightItems;
+					swipeItems = _rightItems;
 					break;
 				case SwipeDirection.Right:
-					swipeItems = Element.LeftItems;
+					swipeItems = _leftItems;
 					break;
 				case SwipeDirection.Up:
-					swipeItems = Element.BottomItems;
+					swipeItems = _bottomItems;
 					break;
 				case SwipeDirection.Down:
-					swipeItems = Element.TopItems;
+					swipeItems = _topItems;
 					break;
 			}
 
@@ -860,12 +902,12 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					case SwipeDirection.Left:
 						_contentView.Frame = new CGRect(_originalBounds.X + offset, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-						actionSize = Element.RightItems.Count * SwipeItemWidth;
+						actionSize = _rightItems.Count * SwipeItemWidth;
 						_actionView.Frame = new CGRect(actionSize + offset, actionBounds.Y, actionBounds.Width, actionBounds.Height);
 						break;
 					case SwipeDirection.Right:
 						_contentView.Frame = new CGRect(_originalBounds.X + offset, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-						actionSize = Element.LeftItems.Count * SwipeItemWidth;
+						actionSize = _leftItems.Count * SwipeItemWidth;
 						_actionView.Frame = new CGRect(-actionSize + offset, actionBounds.Y, actionBounds.Width, actionBounds.Height);
 						break;
 					case SwipeDirection.Up:
@@ -1049,6 +1091,7 @@ namespace Xamarin.Forms.Platform.iOS
 					() =>
 					{
 						_swipeOffset = GetSwipeThreshold();
+						UpdateIsOpen(_swipeOffset != 0);
 						double swipeThreshold = _swipeOffset;
 
 						switch (_swipeDirection)
@@ -1087,12 +1130,12 @@ namespace Xamarin.Forms.Platform.iOS
 						{
 							case SwipeDirection.Left:
 								_contentView.Frame = new CGRect(_originalBounds.X - swipeThreshold, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-								actionSize = Element.RightItems.Count * SwipeItemWidth;
+								actionSize = _rightItems.Count * SwipeItemWidth;
 								_actionView.Frame = new CGRect(actionSize - swipeThreshold, actionBounds.Y, actionBounds.Width, actionBounds.Height);
 								break;
 							case SwipeDirection.Right:
 								_contentView.Frame = new CGRect(_originalBounds.X + swipeThreshold, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-								actionSize = Element.LeftItems.Count * SwipeItemWidth;
+								actionSize = _leftItems.Count * SwipeItemWidth;
 								_actionView.Frame = new CGRect(-actionSize + swipeThreshold, actionBounds.Y, actionBounds.Width, actionBounds.Height);
 								break;
 							case SwipeDirection.Up:
@@ -1373,6 +1416,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateIsOpen(bool isOpen)
 		{
 			((ISwipeViewController)Element).IsOpen = isOpen;
+			_isOpen = isOpen;
 		}
 
 		void OnParentScrolled(object sender, ScrolledEventArgs e)
@@ -1435,7 +1479,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var swipeThreshold = GetSwipeThreshold();
 			_swipeOffset = swipeThreshold;
 
-			UpdateSwipeItems();
+			UpdateNativeSwipeItems();
 			Swipe();
 		}
 
