@@ -49,11 +49,11 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				HeightRequest = 60,
 				BackgroundColor = Color.LightGray,
-				LeftItems = new SwipeItems(new List<SwipeItem> { deleteSwipeItem })
+				LeftItems = new SwipeItems(new List<SwipeItem> { addSwipeItem, editSwipeItem })
 				{
 					Mode = SwipeMode.Reveal
 				},
-				RightItems = new SwipeItems(new List<SwipeItem> { addSwipeItem, editSwipeItem })
+				RightItems = new SwipeItems(new List<SwipeItem> { deleteSwipeItem })
 				{
 					Mode = SwipeMode.Reveal
 				}
