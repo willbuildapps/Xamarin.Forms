@@ -19,22 +19,30 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue10366()
 		{
+			Title = "Issue 10366";
+
 			var layout = new StackLayout
 			{
 				Padding = 12
 			};
 
+			var addSwipeItem = new SwipeItem { BackgroundColor = Color.Green, Text = "Add", IconImageSource = "calculator.png" };
+			var editSwipeItem = new SwipeItem { BackgroundColor = Color.Orange, Text = "Favourite", IconImageSource = "bell.png" };
 			var deleteSwipeItem = new SwipeItem { BackgroundColor = Color.Red, Text = "Delete", IconImageSource = "coffee.png" };
-			var favouriteSwipeItem = new SwipeItem { BackgroundColor = Color.Orange, Text = "Favourite", IconImageSource = "bell.png" };
+
+			addSwipeItem.Invoked += (sender, e) =>
+			{
+				DisplayAlert("SwipeView", "Add Invoked", "OK");
+			};
+
+			editSwipeItem.Invoked += (sender, e) =>
+			{
+				DisplayAlert("SwipeView", "Favourite Invoked", "OK");
+			};
 
 			deleteSwipeItem.Invoked += (sender, e) =>
 			{
 				DisplayAlert("SwipeView", "Delete Invoked", "OK");
-			};
-
-			favouriteSwipeItem.Invoked += (sender, e) =>
-			{
-				DisplayAlert("SwipeView", "Favourite Invoked", "OK");
 			};
 
 			var swipeView = new SwipeView
@@ -45,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Mode = SwipeMode.Reveal
 				},
-				RightItems = new SwipeItems(new List<SwipeItem> { favouriteSwipeItem })
+				RightItems = new SwipeItems(new List<SwipeItem> { addSwipeItem, editSwipeItem })
 				{
 					Mode = SwipeMode.Reveal
 				}
