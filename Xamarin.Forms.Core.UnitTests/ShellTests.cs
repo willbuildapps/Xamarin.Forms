@@ -590,6 +590,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
 		}
 
+
+		[Test]
+		public async Task OnBackbuttonPressedFiresOnPage()
+		{
+			Shell shell = new Shell();
+			Routing.RegisterRoute("OnBackbuttonPressedFiresOnPage", typeof(ShellTestPage));
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync($"OnBackbuttonPressedFiresOnPage?CancelNavigationOnBackButtonPressed=true");
+			Assert.AreEqual(false, shell.SendBackButtonPressed());
+		}
+
 		[Test]
 		public void BackButtonBehaviorSet()
 		{
@@ -896,6 +907,33 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 		[Test]
+		public async Task ShellFlyoutChangeableOnShellWithFlyoutItem()
+		{
+			Shell shell = new Shell();
+			var flyoutItem = CreateShellItem<FlyoutItem>();
+			shell.Items.Add(flyoutItem);
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Locked;
+			Assert.AreEqual(FlyoutBehavior.Locked, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Disabled;
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
+		}
+
+		[Test]
+		public async Task ShellFlyoutChangeableOnShellWithTabBar()
+		{
+			Shell shell = new Shell();
+			var tabBarItem = CreateShellItem<TabBar>();
+			shell.Items.Add(tabBarItem);
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Flyout;
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Locked;
+			Assert.AreEqual(FlyoutBehavior.Locked, shell.GetEffectiveFlyoutBehavior());
+		}
+
+
+		[Test]
 		public async Task ShellFlyoutBehaviorCalculation()
 		{
 			Shell shell = new Shell();
@@ -927,21 +965,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task TabBarAutoCreation()
 		{
 			Shell shell = new Shell();
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 
 			Assert.AreEqual(1, shell.Items.Count);
 			Assert.AreEqual(3, shell.Items[0].Items.Count);
 
-			Assert.AreEqual(FlyoutBehavior.Disabled, Shell.GetFlyoutBehavior(shell.Items[0]));
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
 
 
 			shell = new Shell();
 			shell.Items.Add(new TabBar());
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 
 			Assert.AreEqual(2, shell.Items.Count);
 			Assert.AreEqual(0, shell.Items[0].Items.Count);
@@ -949,13 +987,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 			shell = new Shell();
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 			shell.Items.Add(new TabBar());
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 
 			Assert.AreEqual(3, shell.Items.Count);
 			Assert.AreEqual(3, shell.Items[0].Items.Count);
@@ -1324,6 +1362,50 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(Color.Red, label.BackgroundColor);
 			Assert.IsTrue(VisualStateManager.GoToState(grid, "Selected"));
 			Assert.AreEqual(Color.Green, label.BackgroundColor);
+		}
+
+		[Test]
+		public void ClearingShellContentAndReAddingSetsCurrentItem()
+		{
+			Shell shell = new Shell();
+			var item = CreateShellItem();
+			item.CurrentItem.Items.Add(CreateShellContent());
+			item.CurrentItem.Items.Add(CreateShellContent());
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item);
+			shell.Items.Add(item2);
+
+			item.Items[0].Items.Clear();
+
+			var content = CreateShellContent();
+			item.Items[0].Items.Add(content);
+			item.Items[0].Items.Add(CreateShellContent());
+
+			Assert.IsNotNull(item.CurrentItem);
+			Assert.IsNotNull(item.CurrentItem.CurrentItem);
+		}
+
+		[Test]
+		public void ClearingShellSectionAndReAddingSetsCurrentItem()
+		{
+			Shell shell = new Shell();
+			var item = CreateShellItem();
+			item.CurrentItem.Items.Add(CreateShellContent());
+			item.CurrentItem.Items.Add(CreateShellContent());
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item);
+			shell.Items.Add(item2);
+
+			item.Items.Clear();
+
+			var section = CreateShellSection();
+			item.Items.Add(section);
+			item.Items.Add(CreateShellSection());
+
+			Assert.IsNotNull(item.CurrentItem);
+			Assert.IsNotNull(item.CurrentItem.CurrentItem);
 		}
 
 
