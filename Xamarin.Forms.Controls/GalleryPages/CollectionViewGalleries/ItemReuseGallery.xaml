@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ItemReuseGallery">
+    <ContentPage.Content>
+
+        <StackLayout>
+
+            <Label Text="Tick the first box. Scroll to the end - no other boxes should be ticked."/>
+
+            <CollectionView x:Name="ColV" ItemsSource="{Binding .}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal" HeightRequest="300">
+                            <Label Text="{Binding .}" VerticalTextAlignment="Center"/>
+                            <CheckBox />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+        </StackLayout>
+        
+    </ContentPage.Content>
+</ContentPage>
