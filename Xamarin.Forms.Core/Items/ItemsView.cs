@@ -157,6 +157,8 @@ namespace Xamarin.Forms
 			set => SetValue(ItemsUpdatingScrollModeProperty, value);
 		}
 
+		public Action<Element> PrepareItemForReuse { get; set; }
+
 		public void ScrollTo(int index, int groupIndex = -1,
 			ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
 		{

@@ -108,7 +108,12 @@ namespace Xamarin.Forms.Platform.iOS
 				var currentElement = VisualElementRenderer?.Element;
 
 				if (currentElement != null)
+				{
+					// If the ItemsView has specified a PrepareItemForReuse method, now's the time
+					itemsView.PrepareItemForReuse?.Invoke(currentElement);
+
 					currentElement.BindingContext = bindingContext;
+				}
 			}
 
 			_currentTemplate = itemTemplate;

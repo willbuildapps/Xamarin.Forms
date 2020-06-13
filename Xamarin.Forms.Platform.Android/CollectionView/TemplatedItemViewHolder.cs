@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var templateChanging = template != _selectedTemplate;
 
-			if(templateChanging)
+			if (templateChanging)
 			{
 				// Clean up any content we're still holding on to
 				_itemContentView.Recycle();
@@ -64,6 +64,15 @@ namespace Xamarin.Forms.Platform.Android
 				_itemContentView.RealizeContent(View);
 
 				_selectedTemplate = template;
+			}
+			else
+			{
+				// Template is staying the same; has a PrepareItemForReuse method been specified? If so, we need to run
+				// the ItemContentView's Forms View through before it can be used
+				if (View != null)
+				{
+					itemsView.PrepareItemForReuse?.Invoke(View);
+				}
 			}
 
 			_itemContentView.HandleItemSizingStrategy(reportMeasure, size);
