@@ -248,7 +248,7 @@ namespace Xamarin.Forms
 		}
 
 		static IReadOnlyList<string> s_flags;
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new string[0]);
 
 		public static void SetFlags(params string[] flags)
 		{
@@ -257,7 +257,9 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
 			}
 
-			s_flags = flags.ToList().AsReadOnly();
+			s_flags = (string[])flags.Clone();
+			if (s_flags.Contains ("Profile"))
+				Profile.Enable();
 		}
 
 		public static void SetTitleBarVisibility(TizenTitleBarVisibility visibility)
@@ -459,10 +461,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
-					var flags = options.Flags;
-					var noCss = (flags & InitializationFlags.DisableCss) != 0;
-					if (!noCss)
-						Registrar.RegisterStylesheets();
+					Registrar.RegisterStylesheets(options.Flags);
 				}
 				else
 				{

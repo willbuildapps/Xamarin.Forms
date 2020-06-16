@@ -4,7 +4,8 @@
   </PropertyGroup>
 
 
-  
+
+
   <PropertyGroup Condition="'$(CI)' == ''">
     <CI>false</CI>
     <CI Condition="'$(TF_BUILD)' == 'true'">true</CI>
