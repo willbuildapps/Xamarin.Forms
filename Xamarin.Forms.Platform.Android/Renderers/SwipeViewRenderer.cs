@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, AView>
 	{
+		const float OpenSwipeThresholdPercentage = 0.6f; // 60%
 		const int SwipeThreshold = 250;
 		const int SwipeItemWidth = 100;
 		const long SwipeAnimationDuration = 200;
@@ -277,34 +278,62 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnTouchEvent(e);
 
+			if (e.Action == MotionEventActions.Move && !ShouldInterceptTouch(e))
+				return true;
+
 			ProcessSwipingInteractions(e);
 
 			return true;
 		}
 
+		bool ShouldInterceptTouch(MotionEvent e)
+		{
+			if (_initialPoint == null)
+				return false;
+
+			var interceptPoint = new Point(e.GetX() / _density, e.GetY() / _density);
+
+			var diffX = interceptPoint.X - _initialPoint.X;
+			var diffY = interceptPoint.Y - _initialPoint.Y;
+
+			SwipeDirection swipeDirection;
+
+			if(Math.Abs(diffX) > Math.Abs(diffY))
+				swipeDirection = diffX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
+			else
+				swipeDirection = diffY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
+			
+			var items = GetSwipeItemsByDirection(swipeDirection);
+
+			if (items == null || items.Count == 0)
+				return false;
+			
+			return true;
+		}
+
 		public override bool OnInterceptTouchEvent(MotionEvent e)
 		{
-			switch (e.Action)
-			{
-				case MotionEventActions.Down:
-					_downX = e.RawX;
-					_downY = e.RawY;
-					_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
-					break;
-				case MotionEventActions.Move:
-				case MotionEventActions.Cancel:
-				case MotionEventActions.Up:
-					ProcessSwipingInteractions(e);
-					break;
-			}
-
 			return false;
 		}
 
 		public override bool DispatchTouchEvent(MotionEvent e)
 		{
+			if (e.Action == MotionEventActions.Down)
+			{ 
+				   _downX = e.RawX;
+				_downY = e.RawY;
+				_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+			}
+
 			if (e.Action == MotionEventActions.Up)
-				PropagateParentTouch();
+			{
+				var touchUpPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+
+				if (CanProcessTouchSwipeItems(touchUpPoint))
+					ProcessTouchSwipeItems(touchUpPoint);
+				else
+					PropagateParentTouch();
+			}	
 
 			return base.DispatchTouchEvent(e);
 		}
@@ -317,12 +346,9 @@ namespace Xamarin.Forms.Platform.Android
 			// When doing touch up, if the SwipeView is closed, we propagate the Touch to the parent. In this way, the parent
 			// element will manage the touch (SelectionChanged, etc.).
 			if (itemContentView != null && !((ISwipeViewController)Element).IsOpen)
-			{
 				itemContentView.ClickOn();
-			}
 		}
-
-
+		
 		void UpdateContent()
 		{
 			if (Element.Content == null)
@@ -359,9 +385,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		SwipeItems GetSwipeItemsByDirection()
 		{
+			if (_swipeDirection.HasValue)
+				return GetSwipeItemsByDirection(_swipeDirection.Value);
+
+			return null;
+		}
+
+		SwipeItems GetSwipeItemsByDirection(SwipeDirection swipeDirection)
+		{
 			SwipeItems swipeItems = null;
 
-			switch (_swipeDirection)
+			switch (swipeDirection)
 			{
 				case SwipeDirection.Left:
 					swipeItems = _rightItems;
@@ -457,7 +491,7 @@ namespace Xamarin.Forms.Platform.Android
 					return !ProcessTouchMove(point);
 				case GestureStatus.Canceled:
 				case GestureStatus.Completed:
-					ProcessTouchUp(point);
+					ProcessTouchUp();
 					break;
 			}
 
@@ -493,7 +527,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				UpdateNativeSwipeItems();
 			}
-			
+
 			if (!_isSwiping)
 			{
 				RaiseSwipeStarted();
@@ -516,12 +550,9 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
-		bool ProcessTouchUp(APointF point)
+		bool ProcessTouchUp()
 		{
 			_isTouchDown = false;
-
-			if (CanProcessTouchSwipeItems(point))
-				ProcessTouchSwipeItems(point);
 
 			if (!_isSwiping)
 				return false;
@@ -681,6 +712,10 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var items = GetSwipeItemsByDirection();
+
+			if (items == null || items.Count == 0)
+				return;
+
 			int i = 0;
 			int previousWidth = 0;
 
@@ -779,7 +814,7 @@ namespace Xamarin.Forms.Platform.Android
 				int drawableWidth = drawable.IntrinsicWidth;
 				int drawableHeight = drawable.IntrinsicHeight;
 
-				if(drawableWidth > drawableHeight)
+				if (drawableWidth > drawableHeight)
 				{
 					var iconWidth = iconSize;
 					var iconHeight = drawableHeight * iconWidth / drawableWidth;
@@ -1097,7 +1132,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_swipeDirection == null)
 				return;
 
-			var swipeThresholdPercent = 0.6 * GetSwipeThreshold();
+			var swipeThresholdPercent = OpenSwipeThresholdPercentage * GetSwipeThreshold();
 
 			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
 			{
@@ -1364,6 +1399,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIsOpen(bool isOpen)
 		{
+			if (Element == null) 
+				return;
+
 			((ISwipeViewController)Element).IsOpen = isOpen;
 			_isOpen = isOpen;
 		}
@@ -1414,7 +1452,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (_swipeDirection == null || !ValidateSwipeDirection())
 				return;
 
-			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value);
+			bool isOpen = false;
+
+			var swipeThresholdPercent = OpenSwipeThresholdPercentage * GetSwipeThreshold();
+
+			if (Math.Abs(_swipeOffset) >= swipeThresholdPercent)
+				isOpen = true;
+
+			var swipeEndedEventArgs = new SwipeEndedEventArgs(_swipeDirection.Value, isOpen);
 			((ISwipeViewController)Element).SendSwipeEnded(swipeEndedEventArgs);
 		}
 	}
