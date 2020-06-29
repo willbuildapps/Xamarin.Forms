@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 10366, "[Enhancement] Change SwipeView to Support RTL", PlatformAffected.Android)]
 	public class Issue10366 : TestContentPage
 	{
+		const string SwipeViewId = "SwipeViewId";
+
 		public Issue10366()
 		{
 			Title = "Issue 10366";
@@ -47,6 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var swipeView = new SwipeView
 			{
+				AutomationId = SwipeViewId,
 				HeightRequest = 60,
 				BackgroundColor = Color.LightGray,
 				LeftItems = new SwipeItems(new List<SwipeItem> { addSwipeItem, editSwipeItem })
@@ -115,5 +118,19 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 		}
+
+#if UITEST
+		[Test]
+		public void Issue10366TestSwipeViewRTL()
+		{
+			RunningApp.WaitForElement(x => x.Marked(SwipeViewId));
+			RunningApp.SwipeRightToLeft(SwipeViewId);
+			RunningApp.Screenshot("LTR SwipeView");
+			RunningApp.Tap(x => x.Marked("Change FlowDirection"));
+			RunningApp.SwipeRightToLeft(SwipeViewId);
+			RunningApp.WaitForElement (q => q.Marked ("RightToLeft"));
+			RunningApp.Screenshot("RTL SwipeView");
+		}
+#endif
 	}
 }
