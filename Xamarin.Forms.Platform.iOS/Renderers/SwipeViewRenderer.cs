@@ -1469,7 +1469,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void OnCloseRequested(object sender, CloseSwipeEventArgs e)
+		void OnCloseRequested(object sender, SwipeClosedRequestEventArgs e)
 		{
 			var animated = e.Animated;
 

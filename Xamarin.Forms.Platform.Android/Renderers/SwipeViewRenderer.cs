@@ -1309,7 +1309,7 @@ namespace Xamarin.Forms.Platform.Android
 				item.OnInvoked();
 		}
 
-		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
+		void OnOpenRequested(object sender, SwipeOpenRequestEventArgs e)
 		{
 			if (_contentView == null)
 				return;
@@ -1373,7 +1373,7 @@ namespace Xamarin.Forms.Platform.Android
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
-		void OnCloseRequested(object sender, CloseSwipeEventArgs e)
+		void OnCloseRequested(object sender, SwipeClosedRequestEventArgs e)
 		{
 			var animated = e.Animated;
 
