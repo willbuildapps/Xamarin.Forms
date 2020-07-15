@@ -21,6 +21,7 @@ using Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries;
 using Xamarin.Forms.Controls.GalleryPages.ShapesGalleries;
 using Xamarin.Forms.Controls.GalleryPages.GradientGalleries;
 using Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries;
+using Xamarin.Forms.Controls.GalleryPages.DateTimePickerGalleries;
 
 namespace Xamarin.Forms.Controls
 {
@@ -302,7 +303,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new RadioButtonCoreGalleryPage(), "RadioButton Core Gallery"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new ExpanderGalleries(), "Expander Gallery"),
-				new GalleryPageFactory(() => new IndicatorGalleries(), "IndicatorView Gallery"),				
+				new GalleryPageFactory(() => new IndicatorGalleries(), "IndicatorView Gallery"),
 				new GalleryPageFactory(() => new CarouselViewGallery(), "CarouselView Gallery"),
 				new GalleryPageFactory(() => new CarouselViewCoreGalleryPage(), "CarouselView Core Gallery"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
@@ -333,6 +334,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new AlertGallery(), "DisplayAlert Gallery"),
 				new GalleryPageFactory(() => new ToolbarItems(), "ToolbarItems Gallery"),
 				new GalleryPageFactory(() => new ActionSheetGallery(), "ActionSheet Gallery"),
+				new GalleryPageFactory(() => new DateTimePickerGallery(), "DateTime Picker Localization Gallery"),
 				new GalleryPageFactory(() => new ActivityIndicatorCoreGalleryPage(), "ActivityIndicator Gallery"),
 				new GalleryPageFactory(() => new BehaviorsAndTriggers(), "BehaviorsTriggers Gallery"),
 				new GalleryPageFactory(() => new ContextActionsGallery(), "ContextActions List Gallery"),
