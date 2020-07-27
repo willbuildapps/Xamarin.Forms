@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using CoreGraphics;
 using Xamarin.Forms.Shapes;
 
@@ -27,6 +28,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
             if (args.NewElement != null)
             {
+                var points = args.NewElement.Points;
+                points.CollectionChanged += OnCollectionChanged;
+
                 UpdatePoints();
                 UpdateFillRule();
             }
@@ -42,6 +46,20 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateFillRule();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (Element != null)
+                {
+                    var points = Element.Points;
+                    points.CollectionChanged -= OnCollectionChanged;
+                }
+            }
+        }
+
         void UpdatePoints()
         {
             Control.UpdatePoints(Element.Points.ToCGPoints());
@@ -50,6 +68,11 @@ namespace Xamarin.Forms.Platform.MacOS
         public void UpdateFillRule()
         {
             Control.UpdateFillMode(Element.FillRule == FillRule.Nonzero);
+        }
+
+        void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            UpdatePoints();
         }
     }
 
