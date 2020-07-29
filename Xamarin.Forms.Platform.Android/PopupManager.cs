@@ -137,6 +137,7 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 				}
 
+				int messageID = 16908299;
 				var alert = new DialogBuilder(Activity).Create();
 				alert.SetTitleFlowDirection(arguments.FlowDirection);
 				alert.SetTitle(arguments.Title);
@@ -149,12 +150,13 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (arguments.FlowDirection == FlowDirection.LeftToRight)
 				{
-					TextView textView = (TextView)alert.findViewByID(Resource.Id.message);
+					
+					TextView textView = (TextView)alert.findViewByID(messageID);
 					textView.TextDirection = TextDirection.Ltr;
 				}
 				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
 				{
-					TextView textView = (TextView)alert.findViewByID(Resource.Id.message);
+					TextView textView = (TextView)alert.findViewByID(messageID);
 					textView.TextDirection = TextDirection.Rtl;
 				}
 			}
@@ -393,15 +395,11 @@ namespace Xamarin.Forms.Platform.Android
 					if (_useAppCompat)
 					{
 						_appcompatAlertDialog.SetMessage(message);
-						TextView msgtext = (TextView)_appcompatAlertDialog.FindViewById(Resource.Id.message);
-						msgtext.SetForegroundGravity(GravityFlags.CenterHorizontal);
 
 					}
 					else
 					{
 						_legacyAlertDialog.SetMessage(message);
-						TextView msgtext = (TextView)_legacyAlertDialog.FindViewById(Resource.Id.message);
-						msgtext.SetForegroundGravity(GravityFlags.CenterHorizontal);
 					}
 				}
 
