@@ -87,6 +87,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateSwipeTransitionMode();
 				UpdateBackgroundColor();
 				UpdateFlowDirection();
+				UpdateBackground();
 			}
 
 			if (e.OldElement != null)
@@ -111,6 +112,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 			else if (e.IsOneOf(SwipeView.LeftItemsProperty, SwipeView.TopItemsProperty, SwipeView.RightItemsProperty, SwipeView.BottomItemsProperty))
@@ -190,6 +193,16 @@ namespace Xamarin.Forms.Platform.Android
 					SwipeToThreshold(false);
 				}
 			}
+    }
+
+		protected override void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
+
+			if (Element.Content == null)
+				_contentView?.UpdateBackground(background);
 		}
 
 		protected override void OnAttachedToWindow()
@@ -313,7 +326,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent e)
 		{
-			return false;
+			return ShouldInterceptTouch(e);
 		}
 
 		public override bool DispatchTouchEvent(MotionEvent e)
