@@ -114,10 +114,6 @@ namespace Xamarin.Forms.Platform.Android
 				//and return null
 				if (arguments.FlowDirection == FlowDirection.MatchParent)
 				{
-					//if (sender.FlowDirection == FlowDirection.MatchParent)
-					//	dialog.SetTitleFlowDirection(Device.FlowDirection);
-					//else
-					//	dialog.SetTitleFlowDirection(sender.FlowDirection);
 					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 					{
 						dialog.SetTitleFlowDirection(FlowDirection.RightToLeft);
@@ -182,10 +178,6 @@ namespace Xamarin.Forms.Platform.Android
 				var alert = new DialogBuilder(Activity).Create();
 				if (arguments.FlowDirection == FlowDirection.MatchParent)
 				{
-					//if (sender.FlowDirection == FlowDirection.MatchParent)
-					//	alert.SetTitleFlowDirection(Device.FlowDirection);
-					//else
-					//	alert.SetTitleFlowDirection(sender.FlowDirection);
 					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 					{
 						alert.SetTitleFlowDirection(FlowDirection.RightToLeft);
