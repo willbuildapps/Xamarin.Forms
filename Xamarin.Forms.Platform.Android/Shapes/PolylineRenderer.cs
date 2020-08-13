@@ -23,10 +23,12 @@ namespace Xamarin.Forms.Platform.Android
 
             base.OnElementChanged(args);
 
+            if (args.OldElement != null)
+                args.OldElement.Points.CollectionChanged -= OnCollectionChanged;
+
             if (args.NewElement != null)
             {
-                var points = args.NewElement.Points;
-                points.CollectionChanged += OnCollectionChanged;
+                args.OldElement.Points.CollectionChanged += OnCollectionChanged;
 
                 UpdatePoints();
                 UpdateFillRule();
