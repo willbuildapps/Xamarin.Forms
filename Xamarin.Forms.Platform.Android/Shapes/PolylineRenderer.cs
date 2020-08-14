@@ -9,6 +9,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class PolylineRenderer : ShapeRenderer<Polyline, PolylineView>
     {
+        PointCollection _points;
+
         public PolylineRenderer(Context context) : base(context)
         {
 
@@ -23,13 +25,8 @@ namespace Xamarin.Forms.Platform.Android
 
             base.OnElementChanged(args);
 
-            if (args.OldElement != null)
-                args.OldElement.Points.CollectionChanged -= OnCollectionChanged;
-
             if (args.NewElement != null)
             {
-                args.OldElement.Points.CollectionChanged += OnCollectionChanged;
-
                 UpdatePoints();
                 UpdateFillRule();
             }
@@ -51,17 +48,24 @@ namespace Xamarin.Forms.Platform.Android
 
             if (disposing)
             {
-                if (Element != null)
+                if (_points != null)
                 {
-                    var points = Element.Points;
-                    points.CollectionChanged -= OnCollectionChanged;
+                    _points.CollectionChanged -= OnCollectionChanged;
+                    _points = null;
                 }
             }
         }
 
         void UpdatePoints()
         {
-            Control.UpdatePoints(Element.Points);
+            if (_points != null)
+                _points.CollectionChanged -= OnCollectionChanged;
+
+            _points = Element.Points;
+
+            _points.CollectionChanged += OnCollectionChanged;
+
+            Control.UpdatePoints(_points);
         }
 
         void UpdateFillRule()

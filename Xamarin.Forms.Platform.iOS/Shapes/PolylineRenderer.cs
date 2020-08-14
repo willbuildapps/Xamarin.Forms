@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
     public class PolylineRenderer : ShapeRenderer<Polyline, PolylineView>
     {
+        PointCollection _points;
+
         [Internals.Preserve(Conditional = true)]
         public PolylineRenderer()
         {
@@ -26,13 +28,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
             base.OnElementChanged(args);
 
-            if (args.OldElement != null)
-                args.OldElement.Points.CollectionChanged -= OnCollectionChanged;
-
             if (args.NewElement != null)
             {
-                args.NewElement.Points.CollectionChanged += OnCollectionChanged;
-
                 UpdatePoints();
                 UpdateFillRule();
             }
@@ -54,17 +51,24 @@ namespace Xamarin.Forms.Platform.MacOS
 
             if (disposing)
             {
-                if (Element != null)
+                if (_points != null)
                 {
-                    var points = Element.Points;
-                    points.CollectionChanged -= OnCollectionChanged;
+                    _points.CollectionChanged -= OnCollectionChanged;
+                    _points = null;
                 }
             }
         }
 
         void UpdatePoints()
         {
-            Control.UpdatePoints(Element.Points.ToCGPoints());
+            if (_points != null)
+                _points.CollectionChanged -= OnCollectionChanged;
+
+            _points = Element.Points;
+
+            _points.CollectionChanged += OnCollectionChanged;
+
+            Control.UpdatePoints(_points.ToCGPoints());
         }
 
         public void UpdateFillRule()

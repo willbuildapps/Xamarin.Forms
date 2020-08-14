@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Platform.WPF
 {
 	public class PolylineRenderer : ShapeRenderer<Polyline, WPolyline>
 	{
+		PointCollection _points;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Polyline> args)
 		{
 			if (Control == null && args.NewElement != null)
@@ -26,13 +28,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 			base.OnElementChanged(args);
 
-			if (args.OldElement != null)
-				args.OldElement.Points.CollectionChanged -= OnCollectionChanged;
-
 			if (args.NewElement != null)
 			{
-				args.OldElement.Points.CollectionChanged += OnCollectionChanged;
-
 				UpdatePoints();
 				UpdateFillRule();
 			}
@@ -54,17 +51,24 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (disposing)
 			{
-				if (Element != null)
+				if (_points != null)
 				{
-					var points = Element.Points;
-					points.CollectionChanged -= OnCollectionChanged;
+					_points.CollectionChanged -= OnCollectionChanged;
+					_points = null;
 				}
 			}
 		}
 
 		void UpdatePoints()
 		{
-			Control.Points = Element.Points.ToWindows();
+			if (_points != null)
+				_points.CollectionChanged -= OnCollectionChanged;
+
+			_points = Element.Points;
+
+			_points.CollectionChanged += OnCollectionChanged;
+
+			Control.Points = _points.ToWindows();
 		}
 
 		void UpdateFillRule()

@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
     public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
     {
+        PointCollection _points;
+
         [Internals.Preserve(Conditional = true)]
         public PolygonRenderer()
         {
@@ -28,15 +30,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
             if (args.NewElement != null)
             {
-                var points = args.NewElement.Points;
-                points.CollectionChanged += OnCollectionChanged;
-
                 UpdatePoints();
                 UpdateFillRule();
             }
         }
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             base.OnElementPropertyChanged(sender, args);
 
@@ -46,23 +45,30 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateFillRule();
         }
 
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
 
             if (disposing)
             {
-                if (Element != null)
+                if (_points != null)
                 {
-                    var points = Element.Points;
-                    points.CollectionChanged -= OnCollectionChanged;
+                    _points.CollectionChanged -= OnCollectionChanged;
+                    _points = null;
                 }
             }
-		}
+        }
 
-		void UpdatePoints()
+        void UpdatePoints()
         {
-            Control.UpdatePoints(Element.Points.ToCGPoints());
+            if (_points != null)
+                _points.CollectionChanged -= OnCollectionChanged;
+
+            _points = Element.Points;
+
+            _points.CollectionChanged += OnCollectionChanged;
+
+            Control.UpdatePoints(_points.ToCGPoints());
         }
 
         public void UpdateFillRule()
@@ -80,7 +86,7 @@ namespace Xamarin.Forms.Platform.MacOS
     {
         public void UpdatePoints(CGPoint[] points)
         {
-			var path = new CGPath();
+            var path = new CGPath();
             path.AddLines(points);
             path.CloseSubpath();
 
