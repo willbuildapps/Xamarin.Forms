@@ -36,7 +36,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-
+			_offset1 = 0.1f;
+			_offset2 = 0.9f;
 		}
 
 #if APP
@@ -52,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 			UpdateBackground(_offset1, _offset2);
 		}
 
-		void UpdateBackground(float offset1 = 0.1f, float offset2 = 0.9f)
+		void UpdateBackground(float offset1, float offset2)
 		{
 			LinearGradientBrush linearGradient = new LinearGradientBrush
 			{
