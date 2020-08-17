@@ -23,21 +23,24 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 11795, "[Bug] Brushes API - gradient offset does nothing on Android", PlatformAffected.Android)]
 	public partial class Issue11795 : TestContentPage
 	{
+#if APP
 		float _offset1, _offset2;
-
+#endif
 		public Issue11795()
 		{
 #if APP
 			Title = "Issue 11795";
 			Device.SetFlags(new List<string> { ExperimentalFlags.BrushExperimental });
 			InitializeComponent();
+
+			_offset1 = 0.1f;
+			_offset2 = 0.9f;
 #endif
 		}
 
 		protected override void Init()
 		{
-			_offset1 = 0.1f;
-			_offset2 = 0.9f;
+
 		}
 
 #if APP
