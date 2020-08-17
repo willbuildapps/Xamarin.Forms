@@ -9,6 +9,7 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android;
 using Android.Graphics.Drawables;
+using Android.Graphics.Drawables.Shapes;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -29,7 +30,7 @@ namespace Xamarin.Forms.Material.Android
 		readonly EffectControlProvider _effectControlProvider;
 		readonly MotionEventHelper _motionEventHelper;
 		Drawable _defaultBackgroundDrawable;
-		GradientDrawable _backgroundGradientDrawable;
+		GradientStrokeDrawable _backgroundGradientDrawable;
 
 		public MaterialFrameRenderer(Context context)
 			: base(MaterialContextThemeWrapper.Create(context))
@@ -265,11 +266,13 @@ namespace Xamarin.Forms.Material.Android
 				if (_defaultBackgroundDrawable == null)
 					_defaultBackgroundDrawable = Background;
 
-				_backgroundGradientDrawable = new GradientDrawable();
-				_backgroundGradientDrawable.SetShape(ShapeType.Rectangle);
+				_backgroundGradientDrawable = new GradientStrokeDrawable
+				{
+					Shape = new RectShape()
+				};
 
 				_backgroundGradientDrawable.SetCornerRadius(Radius);
-				_backgroundGradientDrawable.UpdateBackground(bgBrush, Height, Width);
+				_backgroundGradientDrawable.UpdateBackground(bgBrush);
 
 				Background = _backgroundGradientDrawable;
 			}

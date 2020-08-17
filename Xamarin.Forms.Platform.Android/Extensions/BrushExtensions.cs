@@ -9,6 +9,13 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class BrushExtensions
 	{
+		static readonly int ApiLevel;
+
+		static BrushExtensions()
+		{
+			ApiLevel = (int)Forms.SdkInt;
+		}
+
 		public static void UpdateBackground(this AView view, Brush brush)
 		{
 			if (view == null)
@@ -163,13 +170,45 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		public static void UpdateBackground(this GradientStrokeDrawable gradientStrokeDrawable, Brush brush)
+		{
+			if (gradientStrokeDrawable == null || brush == null || brush.IsEmpty)
+				return;
+
+			gradientStrokeDrawable.SetStroke(0, Color.Default.ToAndroid());
+
+			if (brush is SolidColorBrush solidColorBrush)
+			{
+				var color = solidColorBrush.Color.IsDefault ? Color.Default.ToAndroid() : solidColorBrush.Color.ToAndroid();
+				gradientStrokeDrawable.SetColor(color);
+			}
+			else
+				gradientStrokeDrawable.SetGradient(brush);
+		}
+
 		public static bool UseGradients(this GradientDrawable gradientDrawable)
 		{
 			if (!Forms.IsNougatOrNewer)
 				return false;
 
-			var colors = gradientDrawable.GetColors();
-			return colors != null && colors.Length > 1;
+			if (ApiLevel >= 24)
+			{
+				var colors = gradientDrawable.GetColors();
+				return colors != null && colors.Length > 1;
+			}
+
+			return false;
+		}
+
+		public static bool UseGradients(this GradientStrokeDrawable gradientDrawable)
+		{
+			if (!Forms.IsNougatOrNewer)
+				return false;
+
+			var color = gradientDrawable.GetColor();
+			var shaderFactory = gradientDrawable.GetShaderFactory();
+
+			return color != null || shaderFactory != null;
 		}
 
 		internal static bool IsValidGradient(GradientStopCollection gradients)
