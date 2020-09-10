@@ -108,6 +108,23 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		void HandleDragLeave(object sender, Windows.UI.Xaml.DragEventArgs e)
+		{
+			var package = e.DataView.Properties["_XFPropertes_DONTUSE"] as DataPackage;
+			var dragEventArgs = new DragEventArgs(package);
+			
+			SendEventArgs<DropGestureRecognizer>(rec =>
+			{
+				if (!rec.AllowDrop)
+				{
+					return;
+				}
+
+				e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+				rec.SendDragLeave(dragEventArgs);
+			});
+		}
+
 		void HandleDragOver(object sender, Windows.UI.Xaml.DragEventArgs e)
 		{
 			var package = e.DataView.Properties["_XFPropertes_DONTUSE"] as DataPackage;
@@ -143,17 +160,24 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			var args = new DropEventArgs(datapackage?.View);
-			SendEventArgs<DropGestureRecognizer>(rec =>
+			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
-				rec.SendDrop(args, element);
+				if (!rec.AllowDrop)
+					return;
+
+				try
+				{
+					await rec.SendDrop(args);
+				}
+				catch (Exception dropExc)
+				{
+					Internals.Log.Warning(nameof(DropGestureRecognizer), $"{dropExc}");
+				}
 			});
 		}
 
 		void HandleDragStarting(UIElement sender, Windows.UI.Xaml.DragStartingEventArgs e)
 		{
-			var args = new DragStartingEventArgs();
-
-			e.Data.Properties["_XFPropertes_DONTUSE"] = args.Data;
 			SendEventArgs<DragGestureRecognizer>(rec =>
 			{
 				if (!rec.CanDrag)
@@ -163,7 +187,8 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				var renderer = sender as IVisualElementRenderer;
-				rec.SendDragStarting(args, renderer?.Element);
+				var args = rec.SendDragStarting(renderer?.Element);
+				e.Data.Properties["_XFPropertes_DONTUSE"] = args.Data;
 
 				if (!args.Handled && renderer != null)
 				{
@@ -171,6 +196,21 @@ namespace Xamarin.Forms.Platform.UWP
 						nativeImage.Source is BitmapImage bi && bi.UriSource != null)
 					{
 						e.Data.SetBitmap(RandomAccessStreamReference.CreateFromUri(bi.UriSource));
+					}
+					else if(!String.IsNullOrWhiteSpace(args.Data.Text))
+					{
+						Uri uri;
+						if (Uri.TryCreate(args.Data.Text, UriKind.Absolute, out uri))
+						{
+							if (args.Data.Text.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+								e.Data.SetWebLink(uri);
+							else
+								e.Data.SetApplicationLink(uri);
+						}
+						else
+						{
+							e.Data.SetText(args.Data.Text);
+						}
 					}
 				}
 
@@ -755,6 +795,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				_container.DragOver += HandleDragOver;
 				_container.Drop += HandleDrop;
+				_container.DragLeave += HandleDragLeave;
 			}
 		}
 

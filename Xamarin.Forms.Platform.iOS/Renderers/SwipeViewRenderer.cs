@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
+		const float MinimumOpenSwipeThresholdPercentage = 0.15f; // 15%
 		const float OpenSwipeThresholdPercentage = 0.6f; // 60%
 		const double SwipeThreshold = 250;
 		const double SwipeItemWidth = 100;
@@ -39,6 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 		double _previousScrollY;
 		int _previousFirstVisibleIndex;
 		bool _isSwipeEnabled;
+		bool _isScrollEnabled;
 		bool _isResettingSwipe;
 		bool _isOpen;
 		bool _isDisposed;
@@ -49,6 +51,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 
 			_swipeItems = new Dictionary<ISwipeItem, object>();
+			_isScrollEnabled = true;
 
 			_tapGestureRecognizer = new UITapGestureRecognizer(HandleTap)
 			{
@@ -141,8 +144,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
-			if (Element.Content != null)
-				Element.Content.Layout(Bounds.ToRectangle());
+			if (Bounds.X < 0 || Bounds.Y < 0)
+				Bounds = new CGRect(0, 0, Bounds.Width, Bounds.Height);
+
+			if (_contentView != null && _contentView.Frame.IsEmpty)
+				_contentView.Frame = Bounds;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -338,6 +344,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Subviews.Length > 0)
 					_contentView = Subviews[0];
 			}
+
+			if (_contentView != null)
+				BringSubviewToFront(_contentView);
 		}
 
 		void UpdateSwipeItems()
@@ -530,6 +539,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (items == null || items.Count == 0)
 				return;
 
+			if (_originalBounds == CGRect.Empty)
+				_originalBounds = _contentView.Frame;
+
 			int i = 0;
 			float previousWidth = 0;
 
@@ -545,12 +557,12 @@ namespace Xamarin.Forms.Platform.iOS
 					switch (_swipeDirection)
 					{
 						case SwipeDirection.Left:
-							child.Frame = new CGRect(_contentView.Frame.Width - (swipeItemWidth + previousWidth), 0, i + 1 * swipeItemWidth, swipeItemHeight);
+							child.Frame = new CGRect(_contentView.Frame.Width - (swipeItemWidth + previousWidth), _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
 							break;
 						case SwipeDirection.Right:
 						case SwipeDirection.Up:
 						case SwipeDirection.Down:
-							child.Frame = new CGRect(previousWidth, 0, i + 1 * swipeItemWidth, swipeItemHeight);
+							child.Frame = new CGRect(previousWidth, _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
 							break;
 					}
 
@@ -805,7 +817,10 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsOpen(_swipeOffset != 0);
 
 			if (Math.Abs(_swipeOffset) > double.Epsilon)
+			{
+				IsParentScrollEnabled(false);
 				Swipe();
+			}
 
 			RaiseSwipeChanging();
 		}
@@ -814,13 +829,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_isTouchDown = false;
 
-			if (CanProcessTouchSwipeItems(point))
-				ProcessTouchSwipeItems(point);
-
 			if (!_isSwiping)
 				return;
 
 			_isSwiping = false;
+			IsParentScrollEnabled(true);
 
 			RaiseSwipeEnded();
 
@@ -828,6 +841,24 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			ValidateSwipeThreshold();
+		}
+
+		void IsParentScrollEnabled(bool scrollEnabled)
+		{
+			var swipeThresholdPercent = MinimumOpenSwipeThresholdPercentage * GetSwipeThreshold();
+
+			if (Math.Abs(_swipeOffset) < swipeThresholdPercent)
+				return;
+
+			if (scrollEnabled == _isScrollEnabled)
+				return;
+
+			_isScrollEnabled = scrollEnabled;
+
+			var parent = this.GetParentOfType<UIScrollView>();
+
+			if (parent != null)
+				parent.ScrollEnabled = _isScrollEnabled;
 		}
 
 		bool CanProcessTouchSwipeItems(CGPoint point)
@@ -889,7 +920,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_contentView == null)
 				return;
 
-			_originalBounds = _contentView.Bounds;
 			var offset = ValidateSwipeOffset(_swipeOffset);
 			_isOpen = offset != 0;
 
@@ -1018,6 +1048,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeItems.Clear();
 			_swipeThreshold = 0;
 			_swipeOffset = 0;
+			_originalBounds = CGRect.Empty;
 
 			if (_actionView != null)
 			{
