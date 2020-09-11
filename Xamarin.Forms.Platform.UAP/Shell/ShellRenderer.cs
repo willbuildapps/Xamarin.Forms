@@ -25,6 +25,9 @@ namespace Xamarin.Forms.Platform.UWP
 		internal const string ShellStyle = "ShellNavigationView";
 		Shell _shell;
 		Brush _flyoutBackdrop;
+		double _flyoutHeight = -1d;
+		double _flyoutWidth = -1d;
+
 		FlyoutBehavior _flyoutBehavior;
 		ShellItemRenderer ItemRenderer { get; }
 		IShellController ShellController => (IShellController)_shell;
@@ -80,9 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
 			UpdateFlyoutBackdrop();
-
-			if(_flyoutBehavior == FlyoutBehavior.Flyout)
-				ShellSplitView.UpdateFlyoutBackdrop();
+			UpdateFlyoutPosition();
 		}
 
 		void OnPaneClosed()
@@ -190,6 +191,20 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		void UpdateFlyoutPosition()
+		{
+			if (_flyoutBehavior == FlyoutBehavior.Disabled)
+				return;
+
+			var splitView = ShellSplitView;
+			if (splitView != null)
+			{
+				splitView.SetFlyoutSizes(_flyoutHeight, _flyoutWidth);
+				if (IsPaneOpen)
+					ShellSplitView.RefreshFlyoutPosition();
+			}
+		}
+		
 		void UpdateFlyoutBackdrop()
 		{
 			if (_flyoutBehavior != FlyoutBehavior.Flyout)
@@ -200,7 +215,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				splitView.FlyoutBackdrop = _flyoutBackdrop;
 				if (IsPaneOpen)
-					ShellSplitView.UpdateFlyoutBackdrop();
+					ShellSplitView.RefreshFlyoutBackdrop();
 			}
 		}
 
@@ -357,6 +372,9 @@ namespace Xamarin.Forms.Platform.UWP
 					titleColor = appearance.TitleColor.ToWindowsColor();
 
 				_flyoutBackdrop = appearance.FlyoutBackdrop;
+
+				_flyoutWidth = appearance.FlyoutWidth;
+				_flyoutHeight = appearance.FlyoutHeight;
 			}
 
 			var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
@@ -364,8 +382,8 @@ namespace Xamarin.Forms.Platform.UWP
 			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = titleColor;
 			UpdatePaneButtonColor(TogglePaneButton, !IsPaneOpen);
 			UpdatePaneButtonColor(NavigationViewBackButton, !IsPaneOpen);
-
 			UpdateFlyoutBackdrop();
+			UpdateFlyoutPosition();
 		}
 
 		#endregion IAppearanceObserver
