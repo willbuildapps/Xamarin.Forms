@@ -1455,7 +1455,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_previousFirstVisibleIndex = e.FirstVisibleItemIndex;
 		}
 
-		void OnOpenRequested(object sender, SwipeOpenRequestEventArgs e)
+		void OnOpenRequested(object sender, OpenRequestedEventArgs e)
 		{
 			if (_contentView == null)
 				return;
@@ -1516,7 +1516,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void OnCloseRequested(object sender, SwipeClosedRequestEventArgs e)
+		void OnCloseRequested(object sender, CloseRequestedEventArgs e)
 		{
 			var animated = e.Animated;
 
