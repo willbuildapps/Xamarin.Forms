@@ -1,17 +1,9 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Graphics;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.Core.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.View;
-using Android.Support.V4.Widget;
-using Android.Support.V7.Widget;
-#endif
 using Xamarin.Forms.Internals;
 using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
@@ -219,7 +211,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePadding();
 			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName || e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateImage();
-			else if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
+			else if (e.IsOneOf(Button.TextProperty, VisualElement.IsVisibleProperty, Button.TextTransformProperty))
 				UpdateTextAndImage();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
@@ -262,18 +254,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool UpdateTextAndImage()
 		{
-			if (_disposed || _renderer == null || _element == null)
+			if (_disposed || _renderer?.View == null || _element == null)
 				return false;
 
 			if (View?.LayoutParameters == null && _hasLayoutOccurred)
 				return false;
-			
+
 			AButton view = View;
 			if (view == null)
 				return false;
 
+			var textTransform = _element.TextTransform;
+			
+			_renderer.View.SetAllCaps(textTransform == TextTransform.Default);
+
 			string oldText = view.Text;
-			view.Text = _element.Text;
+			view.Text = _element.UpdateFormsText(_element.Text, textTransform);
 
 			// If we went from or to having no text, we need to update the image position
 			if (string.IsNullOrEmpty(oldText) != string.IsNullOrEmpty(view.Text))

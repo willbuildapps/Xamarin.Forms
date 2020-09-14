@@ -21,6 +21,20 @@ namespace Xamarin.Forms
 		{
 
 		}
+
+		public static readonly new BindableProperty IsVisibleProperty =
+			BindableProperty.CreateAttached(nameof(IsVisible), typeof(bool), typeof(FlyoutItem), true, propertyChanged: OnFlyoutItemIsVisibleChanged);
+
+		public static bool GetIsVisible(BindableObject obj) => (bool)obj.GetValue(IsVisibleProperty);
+		public static void SetIsVisible(BindableObject obj, bool isVisible) => obj.SetValue(IsVisibleProperty, isVisible);
+
+		static void OnFlyoutItemIsVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (bindable is Element element)
+				element
+					.FindParentOfType<Shell>()
+					?.SendStructureChanged();
+		}
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Always)]
@@ -105,8 +119,10 @@ namespace Xamarin.Forms
 				if (shell == null)
 					return true;
 
-				bool defaultShow = ShellItemController.GetItems().Count > 1;
-				return shell.GetEffectiveValue<bool>(Shell.TabBarIsVisibleProperty, () => defaultShow, null, displayedPage);
+				if (ShellItemController.GetItems().Count <= 1)
+					return false;
+
+				return shell.GetEffectiveValue<bool>(Shell.TabBarIsVisibleProperty, () => true, null, displayedPage);
 			}
 		}
 
@@ -241,9 +257,12 @@ namespace Xamarin.Forms
 			OnVisibleChildAdded(child);
 		}
 
-		protected override void OnChildRemoved(Element child)
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
+
+		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
-			base.OnChildRemoved(child);
+			base.OnChildRemoved(child, oldLogicalIndex);
 			OnVisibleChildRemoved(child);
 		}
 
@@ -301,8 +320,11 @@ namespace Xamarin.Forms
 
 			if (e.OldItems != null)
 			{
-				foreach (Element element in e.OldItems)
-					OnChildRemoved(element);
+				for (var i = 0; i < e.OldItems.Count; i++)
+				{
+					var element = (Element)e.OldItems[i];
+					OnChildRemoved(element, e.OldStartingIndex + i);
+				}
 			}
 		}
 

@@ -11,7 +11,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ShellSectionRenderer : UINavigationController, IShellSectionRenderer, IAppearanceObserver
+	public class ShellSectionRenderer : UINavigationController, IShellSectionRenderer, IAppearanceObserver, IDisconnectable
 	{
 		#region IShellContentRenderer
 
@@ -171,6 +171,31 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateFlowDirection();
 		}
 
+
+
+		void IDisconnectable.Disconnect()
+		{
+			(_renderer as IDisconnectable)?.Disconnect();
+
+			if (_displayedPage != null)
+				_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
+
+			if (_shellSection != null)
+			{
+				_shellSection.PropertyChanged -= HandlePropertyChanged;
+				((IShellSectionController)ShellSection).NavigationRequested -= OnNavigationRequested;
+				((IShellSectionController)ShellSection).RemoveDisplayedPageObserver(this);
+			}
+
+
+			if (_context.Shell != null)
+			{
+				_context.Shell.PropertyChanged -= HandleShellPropertyChanged;
+				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
+			}
+
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -182,15 +207,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_disposed = true;
 				_renderer.Dispose();
 				_appearanceTracker.Dispose();
-				_shellSection.PropertyChanged -= HandlePropertyChanged;
-				_context.Shell.PropertyChanged -= HandleShellPropertyChanged;
-
-				if (_displayedPage != null)
-					_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
-
-				((IShellSectionController)_shellSection).NavigationRequested -= OnNavigationRequested;
-				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
-				((IShellSectionController)ShellSection).RemoveDisplayedPageObserver(this);
+				(this as IDisconnectable).Disconnect();
 
 				foreach (var tracker in ShellSection.Stack)
 				{
@@ -559,6 +576,16 @@ namespace Xamarin.Forms.Platform.iOS
 			public NavDelegate(ShellSectionRenderer renderer)
 			{
 				_self = renderer;
+			}
+
+			// This is currently working around a Mono Interpreter bug
+			// if you remove this code please verify that hot restart still works
+			// https://github.com/xamarin/Xamarin.Forms/issues/10519
+			[Export("navigationController:animationControllerForOperation:fromViewController:toViewController:")]
+			[Foundation.Preserve(Conditional = true)]
+			public new IUIViewControllerAnimatedTransitioning GetAnimationControllerForOperation(UINavigationController navigationController, UINavigationControllerOperation operation, UIViewController fromViewController, UIViewController toViewController)
+			{
+				return null;
 			}
 
 			public override void DidShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)
