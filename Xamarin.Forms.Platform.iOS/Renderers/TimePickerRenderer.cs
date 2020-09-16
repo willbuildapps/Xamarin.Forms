@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override UIControl CreateNativeControl()
 		{
 			var datePickerStyle = Element.OnThisPlatform().UIDatePickerStyle();
-			if (datePickerStyle != PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Automatic)
+			if (datePickerStyle != PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Automatic && Forms.IsiOS13OrNewer)
 				return new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
 			else
 				return new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						_picker = new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
 
-						if (Forms.IsiOS14OrNewer)
+						if (Forms.IsiOS13OrNewer)
 						{
 							_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
 						}
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal virtual void UpdateFont()
 		{
-			if (!Forms.IsiOS14OrNewer)
+			if (TextField != null)
 				TextField.Font = Element.ToUIFont();
 		}
 
@@ -245,8 +245,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateDatePickerStyle()
 		{
-			var datePickerStyle = Element.OnThisPlatform().UIDatePickerStyle();
+			if (!Forms.IsiOS13OrNewer)
+				return;
 
+			var datePickerStyle = Element.OnThisPlatform().UIDatePickerStyle();
+			
 			switch (datePickerStyle)
 			{
 				case PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Compact:
