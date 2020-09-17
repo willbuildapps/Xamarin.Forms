@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			Title = "Issue 11498";
-			Device.SetFlags(new List<string> { ExperimentalFlags.ShapesExperimental });
 			InitializeComponent();
 #endif
 		}
