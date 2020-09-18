@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		[Test]
 		public void WkWebViewDisposesProperly()
-			
+		{
 			RunningApp.Tap("NextButton");
 			RunningApp.Tap("BackButton");
 			RunningApp.Tap("NextButton");
