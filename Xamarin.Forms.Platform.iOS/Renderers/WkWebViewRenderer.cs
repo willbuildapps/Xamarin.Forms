@@ -53,29 +53,42 @@ namespace Xamarin.Forms.Platform.iOS
 		public void SetElement(VisualElement element)
 		{
 			var oldElement = Element;
-			Element = element;
-			Element.PropertyChanged += HandlePropertyChanged;
-			WebView.EvalRequested += OnEvalRequested;
-			WebView.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
-			WebView.GoBackRequested += OnGoBackRequested;
-			WebView.GoForwardRequested += OnGoForwardRequested;
-			WebView.ReloadRequested += OnReloadRequested;
-			NavigationDelegate = new CustomWebViewNavigationDelegate(this);
-			UIDelegate = new CustomWebViewUIDelegate();
 
-			BackgroundColor = UIColor.Clear;
+			if(oldElement != null)
+			{
+				oldElement.PropertyChanged -= HandlePropertyChanged;
+			}
 
-			AutosizesSubviews = true;
+			if (element != null)
+			{
+				Element = element;
+				Element.PropertyChanged += HandlePropertyChanged;
 
-			_tracker = new VisualElementTracker(this);
+				if(_packager == null)
+				{
+					WebView.EvalRequested += OnEvalRequested;
+					WebView.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
+					WebView.GoBackRequested += OnGoBackRequested;
+					WebView.GoForwardRequested += OnGoForwardRequested;
+					WebView.ReloadRequested += OnReloadRequested;
+					NavigationDelegate = new CustomWebViewNavigationDelegate(this);
+					UIDelegate = new CustomWebViewUIDelegate();
 
-			_packager = new VisualElementPackager(this);
-			_packager.Load();
+					BackgroundColor = UIColor.Clear;
 
-			_events = new EventTracker(this);
-			_events.LoadEvents(this);
+					AutosizesSubviews = true;
 
-			Load();
+					_tracker = new VisualElementTracker(this);
+
+					_packager = new VisualElementPackager(this);
+					_packager.Load();
+
+					_events = new EventTracker(this);
+					_events.LoadEvents(this);
+				}
+
+				Load();
+			}
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
@@ -125,11 +138,17 @@ namespace Xamarin.Forms.Platform.iOS
 			ScrollView.Frame = Bounds;
 		}
 
+		bool _disposed;
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
 			if (disposing)
 			{
-				if (IsLoading)
+				if(IsLoading)
 					StopLoading();
 
 				Element.PropertyChanged -= HandlePropertyChanged;
@@ -139,10 +158,18 @@ namespace Xamarin.Forms.Platform.iOS
 				WebView.GoForwardRequested -= OnGoForwardRequested;
 				WebView.ReloadRequested -= OnReloadRequested;
 
+				Element?.ClearValue(Platform.RendererProperty);
+				SetElement(null);
+
+				_events?.Dispose();
 				_tracker?.Dispose();
 				_packager?.Dispose();
-			}
 
+				_events = null;
+				_tracker = null;
+				_events = null;
+			}
+			
 			base.Dispose(disposing);
 		}
 
@@ -198,7 +225,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var extracted = extractCookies.GetCookies(uri);
 					_initialCookiesLoaded = new NSHttpCookie[extracted.Count];
-					for(int i = 0; i < extracted.Count; i++)
+					for (int i = 0; i < extracted.Count; i++)
 					{
 						_initialCookiesLoaded[i] = new NSHttpCookie(extracted[i]);
 					}
@@ -282,9 +309,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				NSHttpCookie nSHttpCookie = null;
 
-				foreach(var findCookie in retrieveCurrentWebCookies)
+				foreach (var findCookie in retrieveCurrentWebCookies)
 				{
-					if(findCookie.Name == cookie.Name)
+					if (findCookie.Name == cookie.Name)
 					{
 						nSHttpCookie = findCookie;
 						break;
@@ -366,7 +393,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Forms.IsiOS11OrNewer)
 			{
-				foreach(var cookie in cookies)
+				foreach (var cookie in cookies)
 					await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(cookie));
 			}
 			else
@@ -402,7 +429,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						var record = records.GetItem<WKWebsiteDataRecord>(i);
 
-						foreach(var deleteme in cookies)
+						foreach (var deleteme in cookies)
 						{
 							if (record.DisplayName.Contains(deleteme.Domain) || deleteme.Domain.Contains(record.DisplayName))
 							{
@@ -472,7 +499,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			try
 			{
-			
+
 				await SyncNativeCookies(Url?.AbsoluteUrl?.ToString());
 			}
 			catch (Exception exc)
@@ -575,10 +602,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				try
 				{
-					if(_renderer?.WebView?.Cookies != null)
+					if (_renderer?.WebView?.Cookies != null)
 						await _renderer.SyncNativeCookiesToElement(url);
 				}
-				catch(Exception exc)
+				catch (Exception exc)
 				{
 					Log.Warning(nameof(WkWebViewRenderer), $"Failed to Sync Cookies {exc}");
 				}
