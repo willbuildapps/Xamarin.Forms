@@ -29,14 +29,14 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Content = new Button()
 				{
-					Text = "Go To Web View",
+					Text = "Go to the next page and back twice. If app doesn't crash test has passed.",
 					Command = new Command(async () =>
 					{
 						await GoToAsync("//user");
-					})
+					}),
+					AutomationId = "NextButton"
 				}
 			};
-
 
 			ContentPage webViewPage = new ContentPage()
 			{
@@ -55,7 +55,8 @@ namespace Xamarin.Forms.Controls.Issues
 							Command = new Command(async () =>
 							{
 								await GoToAsync("//usersearch");
-							})
+							}),
+							AutomationId = "BackButton"
 						}
 					}
 				}
@@ -64,9 +65,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			AddFlyoutItem(contentPage, "User Search").Route = "usersearch";
 			AddFlyoutItem(webViewPage, "Web View Page").Route = "user";
-
-
-
 		}
 
         string GetHtml(string uid)
@@ -77,12 +75,16 @@ namespace Xamarin.Forms.Controls.Issues
 			return htmlHeader + @"<h3>Welcome <b style=""color:blue;"">User Two</b>,</h3><div>Displaying Html message</div>";
 		}
 
-
 #if UITEST
-[Test]
-		public void UpdatingSourceOfDisposedListViewDoesNotCrash()
-		{
+		[Test]
+		public void WkWebViewDisposesProperly()
 			
+			RunningApp.Tap("NextButton");
+			RunningApp.Tap("BackButton");
+			RunningApp.Tap("NextButton");
+			RunningApp.Tap("BackButton");
+			RunningApp.Tap("NextButton");
+			RunningApp.Tap("BackButton");
 		}
 #endif
 	}

@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var oldElement = Element;
 
-			if(oldElement != null)
+			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= HandlePropertyChanged;
 			}
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Element = element;
 				Element.PropertyChanged += HandlePropertyChanged;
 
-				if(_packager == null)
+				if (_packager == null)
 				{
 					WebView.EvalRequested += OnEvalRequested;
 					WebView.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if(IsLoading)
+				if (IsLoading)
 					StopLoading();
 
 				Element.PropertyChanged -= HandlePropertyChanged;
@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_tracker = null;
 				_events = null;
 			}
-			
+
 			base.Dispose(disposing);
 		}
 
