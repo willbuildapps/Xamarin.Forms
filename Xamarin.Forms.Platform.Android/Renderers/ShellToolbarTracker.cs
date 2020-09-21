@@ -20,6 +20,7 @@ using R = Android.Resource;
 using ATextView = global::Android.Widget.TextView;
 using AColor = Android.Graphics.Color;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform;
 using System.Collections.Generic;
 using System.Linq;
 

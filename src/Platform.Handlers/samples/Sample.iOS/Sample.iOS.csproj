@@ -134,7 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sample\Sample.csproj">
-      <Project>{28164E00-92FB-4EEE-927C-D0CF672A004D}</Project>
+      <Project>{E9A45E26-29C4-483D-A6DD-FB69D94F8035}</Project>
       <Name>Sample</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
@@ -142,7 +142,7 @@
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Xamarin.Platform.Handlers\Xamarin.Platform.Handlers.csproj">
-      <Project>{29913989-0F70-48D8-8EDE-B1DD217F21D1}</Project>
+      <Project>{BEBBB0BE-DDE6-41E8-9B05-FE7D59D22B51}</Project>
       <Name>Xamarin.Platform.Handlers</Name>
     </ProjectReference>
   </ItemGroup>

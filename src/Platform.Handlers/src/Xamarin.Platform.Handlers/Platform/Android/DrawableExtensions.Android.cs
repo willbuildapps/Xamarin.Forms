@@ -1,21 +1,14 @@
 ﻿using System;
+using Android.Graphics;
+using Xamarin.Forms;
 using ADrawable = Android.Graphics.Drawables.Drawable;
 using AColorFilter = Android.Graphics.ColorFilter;
 using AColor = Android.Graphics.Color;
 using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
-using Android.Graphics;
 
-namespace Xamarin.Forms.Platform.Android
+namespace Xamarin.Platform
 {
-	enum FilterMode
-	{
-		SrcIn,
-		Multiply,
-		SrcAtop,
-		Clear
-	}
-
-	internal static class DrawableExtensions
+	public static class DrawableExtensions
 	{
 		public static BlendMode GetFilterMode(FilterMode mode)
 		{
@@ -72,28 +65,28 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		public static void SetColorFilter(this ADrawable drawable, Color color, AColorFilter defaultColorFilter, FilterMode mode)
+		public static void SetColorFilter(this ADrawable drawable, Forms.Color color, AColorFilter defaultColorFilter, FilterMode mode)
 		{
 			if (drawable == null)
 				return;
 
-			if (color == Color.Default)
+			if (color == Forms.Color.Default)
 			{
 				SetColorFilter(drawable, defaultColorFilter);
 				return;
 			}
 
-			drawable.SetColorFilter(color.ToAndroid(), mode);
+			drawable.SetColorFilter(color.ToNative(), mode);
 		}
 
-		public static void SetColorFilter(this ADrawable drawable, Color color, FilterMode mode)
+		public static void SetColorFilter(this ADrawable drawable, Forms.Color color, FilterMode mode)
 		{
-			drawable.SetColorFilter(color.ToAndroid(), mode);
+			drawable.SetColorFilter(color.ToNative(), mode);
 		}
 
 		public static void SetColorFilter(this ADrawable drawable, AColor color, FilterMode mode)
 		{
-			if(Forms.Is29OrNewer)
+			if (NativeVersion.IsAtLeast(29))
 				drawable.SetColorFilter(new BlendModeColorFilter(color, GetFilterMode(mode)));
 			else
 #pragma warning disable CS0612 // Type or member is obsolete
