@@ -18,21 +18,28 @@ namespace Xamarin.Platform.Handlers
 
 		public static void MapIsRunning(IViewHandler handler, IActivityIndicator activityIndicator)
 		{
-			if (!(handler.NativeView is UIActivityIndicatorView uIActivityIndicatorView))
-				return;
-
-			if (activityIndicator.IsRunning)
-				uIActivityIndicatorView.StartAnimating();
-			else
-				uIActivityIndicatorView.StopAnimating();
+			(handler as ActivityIndicatorHandler)?.UpdateIsRunning();
 		}
 
 		public static void MapColor(IViewHandler handler, IActivityIndicator activityIndicator)
 		{
-			if (!(handler.NativeView is UIActivityIndicatorView uIActivityIndicatorView))
+			(handler as ActivityIndicatorHandler)?.UpdateColor();
+		}
+
+		void UpdateIsRunning()
+		{
+			if (TypedNativeView?.Superview == null)
 				return;
 
-			uIActivityIndicatorView.Color = activityIndicator.Color == Color.Default ? null : activityIndicator.Color.ToNative();
+			if (VirtualView.IsRunning)
+				TypedNativeView.StartAnimating();
+			else
+				TypedNativeView.StopAnimating();
+		}
+
+		void UpdateColor()
+		{
+			TypedNativeView.Color = VirtualView.Color == Color.Default ? null : VirtualView.Color.ToUIColor();
 		}
 	}
 }
