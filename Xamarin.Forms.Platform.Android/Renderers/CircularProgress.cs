@@ -8,6 +8,7 @@ using AColor = Android.Graphics.Color;
 using Android.Content.Res;
 using Android.Views;
 using Android.Graphics;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {

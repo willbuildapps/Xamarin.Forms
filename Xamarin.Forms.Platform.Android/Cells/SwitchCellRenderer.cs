@@ -6,6 +6,7 @@ using ASwitch = Android.Widget.Switch;
 using Android.OS;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {

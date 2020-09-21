@@ -7,6 +7,7 @@ using Android.Graphics.Drawables;
 using AndroidX.AppCompat.Widget;
 using Android.Views;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AButton = AndroidX.AppCompat.Widget.AppCompatButton;

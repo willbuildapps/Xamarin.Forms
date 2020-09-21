@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using Android.Text;
 using Android.Text.Style;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {
