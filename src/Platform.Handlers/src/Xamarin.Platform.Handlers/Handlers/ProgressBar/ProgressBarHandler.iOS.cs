@@ -12,18 +12,22 @@ namespace Xamarin.Platform.Handlers
 
 		public static void MapProgress(IViewHandler handler, IProgress progressBar)
 		{
-			if (!(handler.NativeView is UIProgressView uIProgressView))
-				return;
-
-			uIProgressView.Progress = (float)progressBar.Progress;
+			(handler as ProgressBarHandler)?.UpdateProgress();
 		}
 
 		public static void MapProgressColor(IViewHandler handler, IProgress progressBar)
 		{
-			if (!(handler.NativeView is UIProgressView uIProgressView))
-				return;
+			(handler as ProgressBarHandler)?.UpdateProgressColor();
+		}
 
-			uIProgressView.ProgressTintColor = progressBar.ProgressColor == Color.Default ? null : progressBar.ProgressColor.ToNative();
+		void UpdateProgress()
+		{
+			TypedNativeView.Progress = (float)VirtualView.Progress;
+		}
+
+		void UpdateProgressColor()
+		{
+			TypedNativeView.ProgressTintColor = VirtualView.ProgressColor == Color.Default ? null : VirtualView.ProgressColor.ToNative();
 		}
 	}
 }
