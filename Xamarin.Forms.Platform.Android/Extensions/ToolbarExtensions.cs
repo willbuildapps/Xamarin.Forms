@@ -1,13 +1,14 @@
 using System.ComponentModel;
 using Android.Views;
-using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
-using ATextView = global::Android.Widget.TextView;
 using Android.Content;
 using Android.Graphics;
 using System.Collections.Generic;
 using System;
 using Android.Text;
 using Android.Text.Style;
+using Xamarin.Platform;
+using ATextView = global::Android.Widget.TextView;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {

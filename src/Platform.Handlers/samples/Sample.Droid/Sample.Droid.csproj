@@ -122,7 +122,7 @@
       <Name>Xamarin.Platform.Handlers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sample\Sample.csproj">
-      <Project>{28164e00-92fb-4eee-927c-d0cf672a004d}</Project>
+      <Project>{F8FA9B5C-ADB2-4732-B1B1-DEAFB40FC5A3}</Project>
       <Name>Sample</Name>
     </ProjectReference>
   </ItemGroup>

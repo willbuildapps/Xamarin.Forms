@@ -20,6 +20,7 @@ using AndroidX.DrawerLayout.Widget;
 using AndroidX.AppCompat.App;
 using Android.Util;
 using Android.Views;
+using Xamarin.Platform;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
@@ -1085,7 +1086,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				var reflectableType = _titleViewRenderer as System.Reflection.IReflectableType;
 				var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : _titleViewRenderer.GetType();
-				if (titleView == null || Registrar.Registered.GetHandlerTypeForObject(titleView) != rendererType)
+				if (titleView == null || Internals.Registrar.Registered.GetHandlerTypeForObject(titleView) != rendererType)
 				{
 					if (_titleView != null)
 						_titleView.Child = null;

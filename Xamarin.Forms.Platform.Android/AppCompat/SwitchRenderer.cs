@@ -4,6 +4,7 @@ using Android.Content;
 using Android.Graphics.Drawables;
 using AndroidX.AppCompat.Widget;
 using Android.Widget;
+using Xamarin.Platform;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
