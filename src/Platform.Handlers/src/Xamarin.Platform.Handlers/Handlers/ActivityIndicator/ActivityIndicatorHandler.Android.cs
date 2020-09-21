@@ -13,23 +13,33 @@ namespace Xamarin.Platform.Handlers
 
 		public static void MapIsRunning(IViewHandler handler, IActivityIndicator activityIndicator)
 		{
-			if (!(handler.NativeView is AProgressBar aProgressBar))
-				return;
-
-			aProgressBar.Visibility = activityIndicator.IsRunning ? ViewStates.Visible : ViewStates.Invisible;
+			(handler as ActivityIndicatorHandler)?.UpdateIsRunning();
 		}
 
 		public static void MapColor(IViewHandler handler, IActivityIndicator activityIndicator)
 		{
-			if (!(handler.NativeView is AProgressBar aProgressBar))
+			(handler as ActivityIndicatorHandler)?.UpdateColor();
+		}
+
+		void UpdateIsRunning()
+		{
+			if (VirtualView == null || TypedNativeView == null)
 				return;
 
-			Color color = activityIndicator.Color;
+			TypedNativeView.Visibility = VirtualView.IsRunning ? ViewStates.Visible : ViewStates.Invisible;
+		}
+
+		void UpdateColor()
+		{
+			if (VirtualView == null || TypedNativeView == null)
+				return;
+
+			Color color = VirtualView.Color;
 
 			if (!color.IsDefault)
-				aProgressBar.IndeterminateDrawable?.SetColorFilter(color.ToNative(), FilterMode.SrcIn);
+				TypedNativeView.IndeterminateDrawable?.SetColorFilter(color.ToNative(), FilterMode.SrcIn);
 			else
-				aProgressBar.IndeterminateDrawable?.ClearColorFilter();
+				TypedNativeView.IndeterminateDrawable?.ClearColorFilter();
 		}
 	}
 }
