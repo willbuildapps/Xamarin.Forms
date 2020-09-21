@@ -3,12 +3,15 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Widget;
 using Android.Views;
+using Xamarin.Platform;
 using AButton = Android.Widget.Button;
+using AOrientation = Android.Widget.Orientation;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class StepperRenderer : ViewRenderer<Stepper, LinearLayout>, IStepperRenderer
 	{
+		[PortHandler]
 		AButton _downButton;
 		AButton _upButton;
 
@@ -24,16 +27,18 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		[PortHandler]
 		protected override LinearLayout CreateNativeControl()
 		{
 			return new LinearLayout(Context)
 			{
-				Orientation = Orientation.Horizontal,
+				Orientation = AOrientation.Horizontal,
 				Focusable = true,
 				DescendantFocusability = DescendantFocusability.AfterDescendants
 			};
 		}
 
+		[PortHandler]
 		protected override void OnElementChanged(ElementChangedEventArgs<Stepper> e)
 		{
 			base.OnElementChanged(e);
@@ -50,6 +55,7 @@ namespace Xamarin.Forms.Platform.Android
 			StepperRendererManager.UpdateButtons(this, _downButton, _upButton);
 		}
 
+		[PortHandler]
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (this.IsDisposed())
@@ -58,15 +64,20 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			base.OnElementPropertyChanged(sender, e);
+
 			StepperRendererManager.UpdateButtons(this, _downButton, _upButton, e);
 		}
 
+		[PortHandler]
 		Stepper IStepperRenderer.Element => Element;
 
+		[PortHandler]
 		AButton IStepperRenderer.UpButton => _upButton;
 
+		[PortHandler]
 		AButton IStepperRenderer.DownButton => _downButton;
 
+		[PortHandler]
 		AButton IStepperRenderer.CreateButton()
 		{
 			var button = new AButton(Context);

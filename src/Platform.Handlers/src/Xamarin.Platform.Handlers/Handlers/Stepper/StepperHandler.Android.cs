@@ -18,7 +18,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected override LinearLayout CreateView()
 		{
-			var aStepper = new LinearLayout(Context)
+			var stepperLayout = new LinearLayout(Context)
 			{
 				Orientation = AOrientation.Horizontal,
 				Focusable = true,
@@ -26,10 +26,10 @@ namespace Xamarin.Platform.Handlers
 			};
 
 			StepperHandlerManager.CreateStepperButtons(this, out _downButton, out _upButton);
-			aStepper.AddView(_downButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.MatchParent));
-			aStepper.AddView(_upButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.MatchParent));
+			stepperLayout.AddView(_downButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.MatchParent));
+			stepperLayout.AddView(_upButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.MatchParent));
 
-			return aStepper;
+			return stepperLayout;
 		}
 
 		public static void MapMinimum(IViewHandler handler, IStepper slider) => (handler as StepperHandler)?.UpdateButtons();
@@ -54,7 +54,7 @@ namespace Xamarin.Platform.Handlers
 		AButton IStepperHandler.CreateButton()
 		{
 			var button = new AButton(Context);
-
+			button.SetHeight((int)Context.ToPixels(10.0));
 			return button;
 		}
 	}

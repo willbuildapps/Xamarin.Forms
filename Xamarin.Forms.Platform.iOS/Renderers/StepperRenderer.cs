@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -14,6 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
+		[PortHandler]
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -70,21 +72,25 @@ namespace Xamarin.Forms.Platform.iOS
 			((IElementController)Element).SetValueFromRenderer(Stepper.ValueProperty, Control.Value);
 		}
 
+		[PortHandler]
 		void UpdateIncrement()
 		{
 			Control.StepValue = Element.Increment;
 		}
 
+		[PortHandler]
 		void UpdateMaximum()
 		{
 			Control.MaximumValue = Element.Maximum;
 		}
 
+		[PortHandler]
 		void UpdateMinimum()
 		{
 			Control.MinimumValue = Element.Minimum;
 		}
 
+		[PortHandler]
 		void UpdateValue()
 		{
 			if (Control.Value != Element.Value)

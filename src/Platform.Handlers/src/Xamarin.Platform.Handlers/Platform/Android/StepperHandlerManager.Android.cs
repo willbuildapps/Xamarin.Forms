@@ -27,20 +27,22 @@ namespace Xamarin.Platform
 
 	public static class StepperHandlerManager
 	{
-		public static void CreateStepperButtons<TButton>(IStepperHandler Handler, out TButton downButton, out TButton upButton)
+		public static void CreateStepperButtons<TButton>(IStepperHandler handler, out TButton downButton, out TButton upButton)
 			where TButton : AButton
 		{
-			downButton = (TButton)Handler.CreateButton();
+			downButton = (TButton)handler.CreateButton();
+			//downButton.Id = Platform.GenerateViewId();
 			downButton.Focusable = true;
 
-			upButton = (TButton)Handler.CreateButton();
+			upButton = (TButton)handler.CreateButton();
+			//upButton.Id = Platform.GenerateViewId();
 			upButton.Focusable = true;
 
 			downButton.Gravity = GravityFlags.Center;
-			downButton.Tag = new StepperHandlerHolder(Handler);
+			downButton.Tag = handler as Java.Lang.Object;
 			downButton.SetOnClickListener(StepperListener.Instance);
 			upButton.Gravity = GravityFlags.Center;
-			upButton.Tag = new StepperHandlerHolder(Handler);
+			upButton.Tag = handler as Java.Lang.Object;
 			upButton.SetOnClickListener(StepperListener.Instance);
 
 			// IMPORTANT:

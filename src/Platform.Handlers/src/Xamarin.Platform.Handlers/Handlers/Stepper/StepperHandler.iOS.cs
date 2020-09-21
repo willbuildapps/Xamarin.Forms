@@ -27,9 +27,6 @@ namespace Xamarin.Platform.Handlers
 
 		public static void MapValue(IViewHandler handler, IStepper slider) => (handler as StepperHandler)?.UpdateValue();
 
-		void OnValueChanged(object sender, EventArgs e)
-			=> VirtualView.Value = TypedNativeView.Value;
-
 		void UpdateIncrement()
 		{
 			TypedNativeView.StepValue = VirtualView.Increment;
@@ -50,5 +47,8 @@ namespace Xamarin.Platform.Handlers
 			if (TypedNativeView.Value != VirtualView.Value)
 				TypedNativeView.Value = VirtualView.Value;
 		}
+
+		void OnValueChanged(object sender, EventArgs e)
+			=> VirtualView.Value = TypedNativeView.Value;
 	}
 }
