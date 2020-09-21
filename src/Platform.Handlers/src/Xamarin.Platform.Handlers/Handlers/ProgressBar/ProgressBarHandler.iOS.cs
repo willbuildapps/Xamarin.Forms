@@ -1,4 +1,5 @@
-﻿using UIKit;
+﻿using System;
+using UIKit;
 using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers
@@ -20,6 +21,11 @@ namespace Xamarin.Platform.Handlers
 			(handler as ProgressBarHandler)?.UpdateProgressColor();
 		}
 
+		public static void MapBackgroundColor(IViewHandler handler, IProgress progressBar)
+		{
+			(handler as ProgressBarHandler)?.UpdateBackgroundColor();
+		}
+
 		void UpdateProgress()
 		{
 			TypedNativeView.Progress = (float)VirtualView.Progress;
@@ -28,6 +34,11 @@ namespace Xamarin.Platform.Handlers
 		void UpdateProgressColor()
 		{
 			TypedNativeView.ProgressTintColor = VirtualView.ProgressColor == Color.Default ? null : VirtualView.ProgressColor.ToNative();
+		}
+
+		void UpdateBackgroundColor()
+		{
+			TypedNativeView.TrackTintColor = VirtualView.BackgroundColor != Color.Default ? VirtualView.BackgroundColor.ToNative() : null;
 		}
 	}
 }

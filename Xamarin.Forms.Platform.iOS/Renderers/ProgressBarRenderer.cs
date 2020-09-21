@@ -46,6 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateProgress();
 		}
 
+		[PortHandler]
 		protected override void SetBackgroundColor(Color color)
 		{
 			base.SetBackgroundColor(color);
