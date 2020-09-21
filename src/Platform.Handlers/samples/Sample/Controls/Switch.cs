@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using Xamarin.Forms;
 using Xamarin.Platform;
 
 namespace Sample
@@ -15,5 +16,9 @@ namespace Sample
 		public Color OnColor { get; set; }
 
 		public Color ThumbColor { get; set; }
+
+		public Action Toggled { get; set; }
+
+		void ISwitch.Toggled() => Toggled?.Invoke();
 	}
 }

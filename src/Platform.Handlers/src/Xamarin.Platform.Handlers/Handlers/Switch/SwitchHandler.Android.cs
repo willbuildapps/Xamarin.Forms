@@ -14,9 +14,12 @@ namespace Xamarin.Platform.Handlers
 		protected override ASwitch CreateView()
 		{
 			_onListener = new OnListener(this);
-			var aswitch = new ASwitch(Context);
-			aswitch.SetOnCheckedChangeListener(_onListener);
-			return aswitch;
+
+			var aSwitch = new ASwitch(Context);
+
+			aSwitch.SetOnCheckedChangeListener(_onListener);
+
+			return aSwitch;
 		}
 
 		protected override void SetupDefaults()
@@ -32,6 +35,10 @@ namespace Xamarin.Platform.Handlers
 				nativeView.SetOnCheckedChangeListener(null);
 				_onListener = null;
 			}
+
+			_defaultTrackDrawable?.Dispose();
+			_defaultTrackDrawable = null;
+
 			base.DisposeView(nativeView);
 		}
 
@@ -66,14 +73,18 @@ namespace Xamarin.Platform.Handlers
 			(handler as SwitchHandler)?.UpdateThumbColor();
 		}
 
-		public virtual void SetIsOn(bool isChecked) => VirtualView.IsToggled = isChecked;
-
-		public virtual void UpdateIsToggled()
+		void UpdateIsToggled()
 		{
 			TypedNativeView.Checked = VirtualView.IsToggled;
 		}
 
-		public virtual void UpdateOnColor()
+		internal void UpdateIsToggled(bool isChecked)
+		{
+			VirtualView.IsToggled = isChecked;
+			VirtualView.Toggled();
+		}
+
+		internal void UpdateOnColor()
 		{
 			if (TypedNativeView.Checked)
 			{
@@ -94,7 +105,7 @@ namespace Xamarin.Platform.Handlers
 			}
 		}
 
-		public virtual void UpdateThumbColor()
+		void UpdateThumbColor()
 		{
 			var thumbColor = VirtualView.ThumbColor;
 
@@ -125,8 +136,9 @@ namespace Xamarin.Platform.Handlers
 			_switchHandler = switchHandler;
 		}
 
-		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
+		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isToggled)
 		{
+			_switchHandler.UpdateIsToggled(isToggled);
 			_switchHandler.UpdateOnColor();
 		}
 	}

@@ -2,11 +2,13 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using UIKit;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class SwitchRenderer : ViewRenderer<Switch, UISwitch>
 	{
+		[PortHandler]
 		UIColor _defaultOnColor;
 		UIColor _defaultThumbColor;
 
@@ -16,6 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
+		[PortHandler]
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -24,6 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+		[PortHandler]
 		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
 		{
 			if (e.OldElement != null)
@@ -48,6 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementChanged(e);
 		}
 
+		[PortHandler]
 		void UpdateOnColor()
 		{
 			if (Element != null)
@@ -59,6 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		[PortHandler]
 		void UpdateThumbColor()
 		{
 			if (Element == null)
@@ -68,11 +74,13 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.ThumbTintColor = thumbColor.IsDefault ? _defaultThumbColor : thumbColor.ToUIColor();
 		}
 
+		[PortHandler]
 		void OnControlValueChanged(object sender, EventArgs e)
 		{
 			((IElementController)Element).SetValueFromRenderer(Switch.IsToggledProperty, Control.On);
 		}
 
+		[PortHandler]
 		void OnElementToggled(object sender, EventArgs e)
 		{
 			Control.SetState(Element.IsToggled, true);

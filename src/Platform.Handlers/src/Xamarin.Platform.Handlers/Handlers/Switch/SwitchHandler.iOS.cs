@@ -11,9 +11,9 @@ namespace Xamarin.Platform.Handlers
 
 		protected override UISwitch CreateView()
 		{
-			var nativeView = new UISwitch(RectangleF.Empty);
-			nativeView.ValueChanged += UISwitchValueChanged;
-			return nativeView;
+			var uISwitch = new UISwitch(RectangleF.Empty);
+			uISwitch.ValueChanged += OnControlValueChanged;
+			return uISwitch;
 		}
 
 		protected override void SetupDefaults()
@@ -23,19 +23,16 @@ namespace Xamarin.Platform.Handlers
 			base.SetupDefaults();
 		}
 
-		protected override void DisposeView(UISwitch nativeView)
+		protected override void DisposeView(UISwitch uISwitch)
 		{
-			nativeView.ValueChanged -= UISwitchValueChanged;
-			base.DisposeView(nativeView);
+			uISwitch.ValueChanged -= OnControlValueChanged;
+			base.DisposeView(uISwitch);
 		}
 
 		public static void MapIsToggled(IViewHandler handler, ISwitch view)
 		{
 			(handler as SwitchHandler)?.UpdateIsToggled();
 		}
-
-		public virtual void SetIsOn() =>
-			VirtualView.IsToggled = TypedNativeView.On;
 
 		public static void MapOnColor(IViewHandler handler, ISwitch view)
 		{
@@ -47,26 +44,35 @@ namespace Xamarin.Platform.Handlers
 			(handler as SwitchHandler)?.UpdateThumbColor();
 		}
 
-		public virtual void UpdateIsToggled()
+		void UpdateIsToggled()
         {
 			TypedNativeView.SetState(VirtualView.IsToggled, true);
 		}
 
-		public virtual void UpdateOnColor()
+		void UpdateOnColor()
 		{
-			var onColor = VirtualView.OnColor;
-			TypedNativeView.OnTintColor = onColor.IsDefault ? _defaultOnColor : onColor.ToNative();
+			if (VirtualView != null)
+			{
+				if (VirtualView.OnColor == Forms.Color.Default)
+					TypedNativeView.OnTintColor = _defaultOnColor;
+				else
+					TypedNativeView.OnTintColor = VirtualView.OnColor.ToNative();
+			}
 		}
 
-		public virtual void UpdateThumbColor()
+		void UpdateThumbColor()
 		{
-			var thumbColor = VirtualView.ThumbColor;
+			if (VirtualView == null)
+				return;
+
+			Forms.Color thumbColor = VirtualView.ThumbColor;
 			TypedNativeView.ThumbTintColor = thumbColor.IsDefault ? _defaultThumbColor : thumbColor.ToNative();
 		}
 
-		void UISwitchValueChanged(object sender, EventArgs e)
+		void OnControlValueChanged(object sender, EventArgs e)
 		{
-			SetIsOn();
+			VirtualView.IsToggled = TypedNativeView.On;
+			VirtualView.Toggled();
 		}
 	}
 }

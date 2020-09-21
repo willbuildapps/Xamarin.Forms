@@ -7,5 +7,7 @@ namespace Xamarin.Platform
 		bool IsToggled { get; set; }
 		Color OnColor { get; }
 		Color ThumbColor { get; }
+
+		void Toggled();
 	}
 }
