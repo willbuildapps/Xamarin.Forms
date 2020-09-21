@@ -18,11 +18,12 @@ namespace Xamarin.Platform
 
 	class StepperHandlerHolder : Java.Lang.Object
 	{
-		internal IStepperHandler _Handler;
-		public StepperHandlerHolder(IStepperHandler Handler)
+		public StepperHandlerHolder(IStepperHandler handler)
 		{
-			_Handler = Handler;
+			StepperHandler = handler;
 		}
+
+		public IStepperHandler StepperHandler { get; set; }
 	}
 
 	public static class StepperHandlerManager
@@ -31,11 +32,9 @@ namespace Xamarin.Platform
 			where TButton : AButton
 		{
 			downButton = (TButton)handler.CreateButton();
-			//downButton.Id = Platform.GenerateViewId();
 			downButton.Focusable = true;
 
 			upButton = (TButton)handler.CreateButton();
-			//upButton.Id = Platform.GenerateViewId();
 			upButton.Focusable = true;
 
 			downButton.Gravity = GravityFlags.Center;
@@ -62,15 +61,15 @@ namespace Xamarin.Platform
 			downButton.NextFocusForwardId = upButton.Id;
 		}
 
-		public static void UpdateButtons<TButton>(IStepperHandler Handler, TButton downButton, TButton upButton, PropertyChangedEventArgs e = null)
+		public static void UpdateButtons<TButton>(IStepperHandler handler, TButton downButton, TButton upButton, PropertyChangedEventArgs e = null)
 			where TButton : AButton
 		{
-			if (!(Handler?.Element is IStepper stepper))
+			if (!(handler?.Element is IStepper stepper))
 				return;
+
 			// NOTE: a value of `null` means that we are forcing an update
 			downButton.Enabled = stepper.IsEnabled && stepper.Value > stepper.Minimum;
 			upButton.Enabled = stepper.IsEnabled && stepper.Value < stepper.Maximum;
-
 		}
 
 		class StepperListener : Java.Lang.Object, AView.IOnClickListener
@@ -82,15 +81,17 @@ namespace Xamarin.Platform
 				if (!(v?.Tag is StepperHandlerHolder HandlerHolder))
 					return;
 
-				if (!(HandlerHolder._Handler?.Element is IStepper stepper))
+				if (!(HandlerHolder.StepperHandler?.Element is IStepper stepper))
 					return;
 
 				var increment = stepper.Increment;
-				if (v == HandlerHolder._Handler.DownButton)
+
+				if (v == HandlerHolder.StepperHandler.DownButton)
 					increment = -increment;
 
-				HandlerHolder._Handler.Element.Value = stepper.Value + increment;
-				UpdateButtons(HandlerHolder._Handler, HandlerHolder._Handler.DownButton, HandlerHolder._Handler.UpButton);
+				HandlerHolder.StepperHandler.Element.Value = stepper.Value + increment;
+				HandlerHolder.StepperHandler.Element.ValueChanged();
+				UpdateButtons(HandlerHolder.StepperHandler, HandlerHolder.StepperHandler.DownButton, HandlerHolder.StepperHandler.UpButton);
 			}
 		}
 	}

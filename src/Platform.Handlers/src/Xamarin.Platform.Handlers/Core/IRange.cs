@@ -5,5 +5,7 @@
 		double Minimum { get; }
 		double Maximum { get; }
 		double Value { get; set; }
+
+		void ValueChanged();
 	}
 }

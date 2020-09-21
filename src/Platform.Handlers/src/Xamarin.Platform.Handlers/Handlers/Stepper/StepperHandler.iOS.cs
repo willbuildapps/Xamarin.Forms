@@ -49,6 +49,9 @@ namespace Xamarin.Platform.Handlers
 		}
 
 		void OnValueChanged(object sender, EventArgs e)
-			=> VirtualView.Value = TypedNativeView.Value;
+		{
+			VirtualView.Value = TypedNativeView.Value;
+			VirtualView.ValueChanged();
+		}
 	}
 }
