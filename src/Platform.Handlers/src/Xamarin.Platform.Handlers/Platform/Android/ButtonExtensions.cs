@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AndroidX.AppCompat.Widget;
+﻿using AndroidX.AppCompat.Widget;
 
 namespace Xamarin.Platform
 {
