@@ -11,6 +11,8 @@ namespace Xamarin.Platform
 		IList<string> Items { get; }
 		IList ItemsSource { get; }
 		int SelectedIndex { get; set; }
-		object SelectedItem { get; }
+		object SelectedItem { get; set; }
+
+		void SelectedIndexChanged();
 	}
 }

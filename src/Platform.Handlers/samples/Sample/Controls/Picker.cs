@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 using Xamarin.Platform;
 
 namespace Sample
@@ -12,7 +10,7 @@ namespace Sample
 	{
 		public Picker()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += OnItemsCollectionChanged;
+
 		}
 
 		public string Title { get; set; }
@@ -47,32 +45,8 @@ namespace Sample
 
 		public TextAlignment VerticalTextAlignment { get; set; }
 
+		public Action SelectedIndexChanged { get; set; }
 
-		void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var oldIndex = SelectedIndex;
-			var newIndex = SelectedIndex = SelectedIndex.Clamp(-1, Items.Count - 1);
-
-			// If the index has not changed, still need to change the selected item
-			if (newIndex == oldIndex)
-				UpdateSelectedItem(newIndex);
-		}
-
-		void UpdateSelectedItem(int index)
-		{
-			if (index == -1)
-			{
-				SelectedItem = null;
-				return;
-			}
-
-			if (ItemsSource != null)
-			{
-				SelectedItem = ItemsSource[index];
-				return;
-			}
-
-			SelectedItem = Items[index];
-		}
+		void IPicker.SelectedIndexChanged() => SelectedIndexChanged?.Invoke();
 	}
 }

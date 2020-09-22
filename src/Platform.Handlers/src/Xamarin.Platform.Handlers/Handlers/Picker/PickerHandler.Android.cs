@@ -96,6 +96,8 @@ namespace Xamarin.Platform.Handlers
 				TypedNativeView.Text = null;
 			else
 				TypedNativeView.Text = VirtualView.Items[VirtualView.SelectedIndex];
+
+			UpdateSelectedItem();
 		}
 
 		void UpdateTextColor()
@@ -119,6 +121,28 @@ namespace Xamarin.Platform.Handlers
 		void UpdateTextAlignment()
 		{
 			TypedNativeView.Gravity = VirtualView.HorizontalTextAlignment.ToHorizontalGravityFlags() | VirtualView.VerticalTextAlignment.ToVerticalGravityFlags();
+		}
+
+		void UpdateSelectedItem()
+		{
+			if (VirtualView == null)
+				return;
+
+			int index = VirtualView.SelectedIndex;
+
+			if (index == -1)
+			{
+				VirtualView.SelectedItem = null;
+				return;
+			}
+
+			if (VirtualView.ItemsSource != null)
+			{
+				VirtualView.SelectedItem = VirtualView.ItemsSource[index];
+				return;
+			}
+
+			VirtualView.SelectedItem = VirtualView.Items[index];
 		}
 
 		void OnClick(object sender, EventArgs e)
@@ -146,6 +170,7 @@ namespace Xamarin.Platform.Handlers
 					{
 						var selectedIndex = e.Which;
 						VirtualView.SelectedIndex = selectedIndex;
+						VirtualView.SelectedIndexChanged();
 						UpdatePicker();
 					});
 

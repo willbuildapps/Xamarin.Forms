@@ -138,6 +138,7 @@ namespace Xamarin.Platform.Handlers
 				return;
 
 			UpdateSelectedIndex(selectedIndex);
+			UpdateSelectedItem();
 			UpdateCharacterSpacing();
 		}
 
@@ -163,6 +164,7 @@ namespace Xamarin.Platform.Handlers
 				return;
 
 			VirtualView.SelectedIndex = selectedIndex;
+			VirtualView.SelectedIndexChanged();
 
 			var source = (PickerSource)_picker.Model;
 			source.SelectedIndex = selectedIndex;
@@ -219,6 +221,28 @@ namespace Xamarin.Platform.Handlers
 		void UpdateVerticalTextAlignment()
 		{
 			TypedNativeView.VerticalAlignment = VirtualView.VerticalTextAlignment.ToNativeTextAlignment();
+		}
+
+		void UpdateSelectedItem()
+		{
+			if (VirtualView == null)
+				return;
+
+			int index = VirtualView.SelectedIndex;
+
+			if (index == -1)
+			{
+				VirtualView.SelectedItem = null;
+				return;
+			}
+
+			if (VirtualView.ItemsSource != null)
+			{
+				VirtualView.SelectedItem = VirtualView.ItemsSource[index];
+				return;
+			}
+
+			VirtualView.SelectedItem = VirtualView.Items[index];
 		}
 
 		void OnCollectionChanged(object sender, EventArgs e)
