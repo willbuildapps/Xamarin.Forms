@@ -11,6 +11,7 @@ using Android.Text.Method;
 using Android.Util;
 using Android.Widget;
 using Android.Views;
+using Xamarin.Platform;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -37,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool SearchView.IOnQueryTextListener.OnQueryTextChange(string newText)
 		{
-			Internals.TextTransformUtilites.SetPlainText(Element, newText);
+			Internals.PlainTextUtilites.SetPlainText(Element, newText);
 
 			return true;
 		}

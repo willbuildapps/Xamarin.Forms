@@ -5,13 +5,13 @@ namespace Xamarin.Forms
 {
 	public partial class Button : IButton
 	{
-		public TextAlignment HorizontalTextAlignment => throw new NotImplementedException();
+		public TextAlignment HorizontalTextAlignment { get; set; }
 
-		public TextAlignment VerticalTextAlignment => throw new NotImplementedException();
+		public TextAlignment VerticalTextAlignment { get; set; }
 
-		Color IText.Color
+		public string UpdateTransformedText(string source, TextTransform textTransform)
 		{
-			get => this.TextColor;
+			throw new NotImplementedException();
 		}
 
 		void IButton.Clicked()
