@@ -1,14 +1,11 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform;
 
-namespace Xamarin.Forms.Internals
+namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class LockableObservableListWrapper : IList<string>, ICollection<string>, INotifyCollectionChanged, INotifyPropertyChanged, IReadOnlyList<string>, IReadOnlyCollection<string>, IEnumerable<string>, IEnumerable
@@ -21,7 +18,8 @@ namespace Xamarin.Forms.Internals
 			remove { ((INotifyCollectionChanged)_list).CollectionChanged -= value; }
 		}
 
-		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
+		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+		{
 			add { ((INotifyPropertyChanged)_list).PropertyChanged += value; }
 			remove { ((INotifyPropertyChanged)_list).PropertyChanged -= value; }
 		}
@@ -34,18 +32,23 @@ namespace Xamarin.Forms.Internals
 				throw new InvalidOperationException("The Items list can not be manipulated if the ItemsSource property is set");
 		}
 
-		public string this [int index] {
-			get { return _list [index]; }
-			set {
+		public string this[int index]
+		{
+			get { return _list[index]; }
+			set
+			{
 				ThrowOnLocked();
-				_list [index] = value; }
+				_list[index] = value;
+			}
 		}
 
-		public int Count {
+		public int Count
+		{
 			get { return _list.Count; }
 		}
 
-		public bool IsReadOnly {
+		public bool IsReadOnly
+		{
 			get { return ((IList<string>)_list).IsReadOnly; }
 		}
 
@@ -61,7 +64,7 @@ namespace Xamarin.Forms.Internals
 		}
 
 		public void InternalClear()
-		{ 
+		{
 			_list.Clear();
 		}
 
@@ -76,7 +79,7 @@ namespace Xamarin.Forms.Internals
 			return _list.Contains(item);
 		}
 
-		public void CopyTo(string [] array, int arrayIndex)
+		public void CopyTo(string[] array, int arrayIndex)
 		{
 			_list.CopyTo(array, arrayIndex);
 		}
