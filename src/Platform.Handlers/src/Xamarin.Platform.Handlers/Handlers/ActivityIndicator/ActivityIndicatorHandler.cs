@@ -6,7 +6,7 @@ using NativeView = UIKit.UIActivityIndicatorView;
 using NativeView = Android.Widget.ProgressBar;
 #elif NETSTANDARD
 using NativeView = System.Object;
-# endif
+#endif
 
 namespace Xamarin.Platform.Handlers
 {
@@ -31,15 +31,7 @@ namespace Xamarin.Platform.Handlers
 #if MONOANDROID
 		protected override NativeView CreateView() => new NativeView(this.Context) { Indeterminate = true };
 #elif __IOS__
-		protected override NativeView CreateView()
-		{
-#if __XCODE11__
-			if(NativeVersion.Supports(NativeApi.UIActivityIndicatorViewStyleMedium))
-				return new NativeView(CGRect.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Medium };
-			else
-#endif
-				return new NativeView(CGRect.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray };
-		}
+		protected override NativeView CreateView() => new NativeView(CGRect.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray };
 #else
 		protected override NativeView CreateView() => new NativeView();
 #endif
