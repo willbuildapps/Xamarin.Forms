@@ -7,6 +7,7 @@ using Android.Text.Format;
 using ATimePicker = Android.Widget.TimePicker;
 using Android.OS;
 using Android.Widget;
+using Xamarin.Platform;
 using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android

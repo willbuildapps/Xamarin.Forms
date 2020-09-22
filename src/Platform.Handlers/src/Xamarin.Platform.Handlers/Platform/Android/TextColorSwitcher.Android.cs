@@ -1,16 +1,17 @@
-using System;
+﻿using System;
 using Android.Content.Res;
 using Android.Widget;
+using Xamarin.Forms;
 
-namespace Xamarin.Forms.Platform.Android
+namespace Xamarin.Platform
 {
 	/// <summary>
 	/// Handles color state management for the TextColor property 
 	/// for Entry, Button, Picker, TimePicker, and DatePicker
 	/// </summary>
-	internal class TextColorSwitcher
+	public class TextColorSwitcher
 	{
-		static readonly int[][] s_colorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
+		static readonly int[][] ColorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
 
 		readonly ColorStateList _defaultTextColors;
 		readonly bool _useLegacyColorManagement;
@@ -43,13 +44,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (_useLegacyColorManagement)
 				{
 					// Set the new enabled state color, preserving the default disabled state color
-					int defaultDisabledColor = _defaultTextColors.GetColorForState(s_colorStates[1], color.ToAndroid());
-					setColor(new ColorStateList(s_colorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
+					int defaultDisabledColor = _defaultTextColors.GetColorForState(ColorStates[1], color.ToNative());
+					setColor(new ColorStateList(ColorStates, new[] { color.ToNative().ToArgb(), defaultDisabledColor }));
 				}
 				else
 				{
-					var acolor = color.ToAndroid().ToArgb();
-					setColor(new ColorStateList(s_colorStates, new[] { acolor, acolor }));
+					var acolor = color.ToNative().ToArgb();
+					setColor(new ColorStateList(ColorStates, new[] { acolor, acolor }));
 				}
 			}
 		}

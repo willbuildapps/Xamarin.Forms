@@ -7,6 +7,7 @@ using AndroidX.Core.View;
 using Android.Text;
 using Android.Util;
 using Android.Views;
+using Xamarin.Platform;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers

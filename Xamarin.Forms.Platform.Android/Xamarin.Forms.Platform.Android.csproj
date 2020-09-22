@@ -59,4 +59,9 @@
   <ItemGroup>
     <Folder Include="Shapes\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Renderers\FontExtensions.cs">
+      <SubType></SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

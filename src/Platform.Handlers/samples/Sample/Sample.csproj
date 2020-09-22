@@ -14,5 +14,8 @@
     <Compile Update="Platform.cs">
       <SubType></SubType>
     </Compile>
+    <Compile Update="Controls\Picker.cs">
+      <SubType></SubType>
+    </Compile>
   </ItemGroup>
 </Project>

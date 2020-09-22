@@ -11,6 +11,7 @@ using Android.Content;
 using AColor = Android.Graphics.Color;
 using Android.Text;
 using Android.Text.Style;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -124,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		void IPickerRenderer.OnClick()
 		{
 			Picker model = Element;
@@ -191,11 +193,13 @@ namespace Xamarin.Forms.Platform.Android
 			_dialog.Show();
 		}
 
+		[PortHandler]
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
 		}
 
+		[PortHandler]
 		void UpdateCharacterSpacing()
 		{
 			if (Forms.IsLollipopOrNewer)
@@ -204,12 +208,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		void UpdateFont()
 		{
 			Control.Typeface = Element.ToTypeface();
 			Control.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
+		[PortHandler("It remains to port everything related with the accessibility.")]
 		void UpdatePicker()
 		{
 			Control.Hint = Element.Title;
@@ -232,11 +238,13 @@ namespace Xamarin.Forms.Platform.Android
 			_pickerAccessibilityDelegate.ValueText = Control.Text;
 		}
 
+		[PortHandler]
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
+		[PortHandler]
 		void UpdateGravity()
 		{
 			Control.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Element.VerticalTextAlignment.ToVerticalGravityFlags();			

@@ -17,7 +17,6 @@ namespace Xamarin.Platform
 		public static UIColor GetBackgroundColor(this UIView view) =>
 			view.BackgroundColor;
 
-
 		public static void SetText(this UIButton view, string text)
 			=> view.SetTitle(text, UIControlState.Normal);
 

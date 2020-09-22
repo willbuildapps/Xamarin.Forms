@@ -11,6 +11,7 @@ using Android.Views;
 using Java.Lang;
 using Android.Widget;
 using Android.Views.InputMethods;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {
