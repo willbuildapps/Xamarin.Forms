@@ -39,14 +39,11 @@ steps:
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll
-        **/bin/$(BuildConfiguration)/**/Xamarin.Forms.DualScreen.UnitTests.dll
-        **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
-        **/bin/$(BuildConfiguration)/**/Xamarin.Platform.Handlers.Tests.dll
       searchFolder: ${{ parameters.nunitTestFolder }}
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
       configuration: '$(BuildConfiguration)'
-      diagnosticsEnabled: true,
+      diagnosticsEnabled: true
       # pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
       # overrideTestrunParameters: -platform AnyCPU -framework Framework47
 
