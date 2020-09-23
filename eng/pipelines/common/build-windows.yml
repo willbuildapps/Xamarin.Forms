@@ -46,10 +46,9 @@ steps:
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
       configuration: '$(BuildConfiguration)'
-      platform: 'AnyCPU'
       diagnosticsEnabled: true,
-      pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
-      overrideTestrunParameters: -platform AnyCPU -framework Framework47
+      # pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
+      # overrideTestrunParameters: -platform AnyCPU -framework Framework47
 
   - task: CopyFiles@2
     displayName: 'Copy Files dlls'
