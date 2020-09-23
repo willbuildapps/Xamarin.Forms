@@ -4,6 +4,7 @@ parameters:
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
   nunitTestFolder: '$(build.sourcesdirectory)'
+  nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
 
 steps:
   - checkout: self
@@ -45,7 +46,8 @@ steps:
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
       configuration: '$(BuildConfiguration)'
-      diagnosticsEnabled: true
+      diagnosticsEnabled: true,
+      pathtoCustomTestAdapters: parameters.nunitTestAdapterFolder
 
   - task: CopyFiles@2
     displayName: 'Copy Files dlls'
