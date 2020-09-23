@@ -49,7 +49,7 @@ steps:
       platform: 'AnyCPU'
       diagnosticsEnabled: true,
       pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
-      overrideTestrunParameters: /Platform:AnyCPU /Framework:Framework47
+      overrideTestrunParameters: -platform AnyCPU -framework Framework47
 
   - task: CopyFiles@2
     displayName: 'Copy Files dlls'
