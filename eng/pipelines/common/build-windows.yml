@@ -46,7 +46,7 @@ steps:
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
       configuration: '$(BuildConfiguration)'
-      platform: 'any cpu'
+      platform: 'AnyCPU'
       diagnosticsEnabled: true,
       pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
 
