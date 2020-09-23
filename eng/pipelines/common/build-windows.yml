@@ -47,7 +47,7 @@ steps:
       testRunTitle: '$(BuildConfiguration)_UnitTests'
       configuration: '$(BuildConfiguration)'
       diagnosticsEnabled: true,
-      pathtoCustomTestAdapters: parameters.nunitTestAdapterFolder
+      pathtoCustomTestAdapters: ${{ parameters.nunitTestAdapterFolder }}
 
   - task: CopyFiles@2
     displayName: 'Copy Files dlls'
