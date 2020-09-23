@@ -76,6 +76,6 @@ stages:
             release:
               BuildConfiguration:  'Release'
         steps:
-          - template: build/steps/build-windows.yml
+          - template: common/build-windows.yml
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
