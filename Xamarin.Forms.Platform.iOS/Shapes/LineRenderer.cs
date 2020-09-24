@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using CoreGraphics;
 using Xamarin.Forms.Shapes;
+using Xamarin.Platform;
 
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
@@ -17,6 +18,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
         }
 
+        [PortHandler]
         protected override void OnElementChanged(ElementChangedEventArgs<Line> args)
         {
             if (Control == null)
@@ -48,28 +50,32 @@ namespace Xamarin.Forms.Platform.MacOS
             else if (args.PropertyName == Line.Y2Property.PropertyName)
                 UpdateY2();
         }
-
+        [PortHandler]
         void UpdateX1()
         {
             Control.UpdateX1(Element.X1);
         }
 
+        [PortHandler]
         void UpdateY1()
         {
             Control.UpdateY1(Element.Y1);
         }
 
+        [PortHandler]
         void UpdateX2()
         {
             Control.UpdateX2(Element.X2);
         }
 
+        [PortHandler]
         void UpdateY2()
         {
             Control.UpdateY2(Element.Y2);
         }
     }
 
+    [PortHandler]
     public class LineView : ShapeView
     {
         nfloat _x1, _y1, _x2, _y2;
