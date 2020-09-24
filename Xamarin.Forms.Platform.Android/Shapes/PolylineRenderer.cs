@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Android.Content;
 using Xamarin.Forms.Shapes;
+using Xamarin.Platform;
 using static Android.Graphics.Path;
 using APath = Android.Graphics.Path;
 
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Platform.Android
 
         }
 
+        [PortHandler]
         protected override void OnElementChanged(ElementChangedEventArgs<Polyline> args)
         {
             if (Control == null)
@@ -39,17 +41,20 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateFillRule();
         }
 
+        [PortHandler]
         void UpdatePoints()
         {
             Control.UpdatePoints(Element.Points);
         }
 
+        [PortHandler]
         void UpdateFillRule()
         {
             Control.UpdateFillMode(Element.FillRule == FillRule.Nonzero);
         }
     }
 
+    [PortHandler]
     public class PolylineView : ShapeView
     {
         PointCollection _points;
