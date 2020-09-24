@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using Xamarin.Forms.Shapes;
+using Xamarin.Platform;
 using APath = Android.Graphics.Path;
 
 namespace Xamarin.Forms.Platform.Android
@@ -11,6 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 
         }
 
+        [PortHandler]
         protected override void OnElementChanged(ElementChangedEventArgs<Ellipse> args)
         {
             if (Control == null)
@@ -22,6 +24,7 @@ namespace Xamarin.Forms.Platform.Android
         }
     }
 
+    [PortHandler]
     public class EllipseView : ShapeView
     {
         public EllipseView(Context context) : base(context)
