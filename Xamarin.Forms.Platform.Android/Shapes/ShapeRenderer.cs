@@ -4,7 +4,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
-using Xamarin.Forms.Shapes;
+using Xamarin.Platform;
 using AColor = Android.Graphics.Color;
 using AMatrix = Android.Graphics.Matrix;
 using APath = Android.Graphics.Path;
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.Android
 
         void UpdateStrokeDashArray()
         {
-            Control.UpdateStrokeDashArray(Element.StrokeDashArray.ToArray());
+            Control.UpdateStrokeDashArray(Element.StrokeDashArray.ToNative());
         }
 
         void UpdateStrokeDashOffset()

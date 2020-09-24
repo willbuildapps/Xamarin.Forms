@@ -1,15 +1,11 @@
 ﻿using CoreGraphics;
-using Xamarin.Forms.Shapes;
+using Xamarin.Forms;
 
-#if __MOBILE__
-namespace Xamarin.Forms.Platform.iOS
-#else
-namespace Xamarin.Forms.Platform.MacOS
-#endif
+namespace Xamarin.Platform
 {
     public static class PointCollectionExtensions
     {
-        public static CGPoint[] ToCGPoints(this PointCollection pointCollection)
+        public static CGPoint[] ToNative(this PointCollection pointCollection)
         {
             if (pointCollection == null || pointCollection.Count == 0)
             {

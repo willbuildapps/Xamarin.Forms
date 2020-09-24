@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Shapes
+﻿namespace Xamarin.Forms
 {
     public enum PenLineCap
     {
